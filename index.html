@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Velho Oeste Online — CODv9</title>
+<title>Palo Seco</title>
 
 <style>
 /* ===== BASE ===== */
@@ -94,6 +94,8 @@ h1{
   text-align:center;
   color:#f0d9a6;
 }
+
+
 header{
   background:#1c120b;
   padding:10px;
@@ -136,6 +138,28 @@ section button:hover{background:#3e2a1c;}
   border-top:3px solid #5a3e2b;
   font-size:13px;
 }
+
+/* ===== LOG UX ===== */
+.log-line{
+  opacity:0.35;
+  transition:opacity .3s;
+}
+
+.log-line:nth-child(1){
+  opacity:1;
+  color:#ffe7b3;
+  font-weight:bold;
+  text-shadow:0 0 6px rgba(255,220,150,.6);
+}
+
+.log-line:nth-child(2){
+  opacity:0.75;
+}
+
+.log-line:nth-child(3){
+  opacity:0.55;
+}
+
 </style>
 </head>
 
@@ -145,6 +169,7 @@ section button:hover{background:#3e2a1c;}
   <div class="avatar">
     <img src="IMG/avatar.png" width="130">
   </div>
+
   <h3>⭐Belchior Bill⭐</h3>
 
   <div class="titulo">Título: <span id="titulo"></span></div>
@@ -180,6 +205,7 @@ section button:hover{background:#3e2a1c;}
 </aside>
 
 <main>
+
   <h1>PALOSECO</h1>
 <header>
   <button onclick="abrir('cidade')">Cidade</button>
@@ -228,7 +254,7 @@ let logs=[];
 let player={
   nivel:1,xp:0,xpProx:20,
   energia:100,bebedeira:0,
-  dinheiro:20,banco:0,
+  dinheiro:1,banco:0,
   status:"Livre",presoAte:0,
   equip:{arma:false,bota:false,chapeu:false}
 };
@@ -237,10 +263,14 @@ const logDiv=document.getElementById("log");
 
 /* ===== UTIL ===== */
 function log(t){
-  logs.unshift(t);          // NOVA ENTRADA NO TOPO
-  if(logs.length > 40) logs.pop(); // remove a mais antiga
-  logDiv.innerHTML = logs.join("<br>");
+  logs.unshift(t);
+  if(logs.length > 40) logs.pop();
+
+  logDiv.innerHTML = logs
+    .map(l => `<div class="log-line">${l}</div>`)
+    .join("");
 }
+
 
 function semDinheiro(){ log("💸 Você não tem dinheiro suficiente."); }
 
@@ -449,7 +479,7 @@ setInterval(()=>{
 },5000);
 
 /* ===== INIT ===== */
-log("🏜️ PALO SECO 🏜️");
+
 log("");
 log("Cuidado.");
 log("Cada passo conta.");
