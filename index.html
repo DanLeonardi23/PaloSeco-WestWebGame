@@ -39,7 +39,14 @@ aside{
 h3{
   text-align:center;
   margin-top:0;
-  margin-bottom:30px;
+  margin-bottom:10px;
+}
+
+/* ===== TÍTULO ===== */
+.titulo{
+  text-align: center;
+  margin-bottom:20px;
+  margin-top: 10px;
 }
 
 /* ===== TABS ===== */
@@ -139,6 +146,9 @@ section button:hover{background:#3e2a1c;}
     <img src="IMG/avatar.png" width="130">
   </div>
   <h3>⭐Belchior Bill⭐</h3>
+
+  <div class="titulo">Título: <span id="titulo"></span></div>
+
   <div class="tabs">
     <button onclick="abrirPainel('status')">Status</button>
     <button onclick="abrirPainel('equip')">Equip</button>
@@ -163,7 +173,7 @@ section button:hover{background:#3e2a1c;}
   </div>
 
   <div id="equip" class="panel">
-    <div>🗡️ Arma: <span id="eqArma"></span></div>
+    <div>🔫 Arma: <span id="eqArma"></span></div>
     <div>👢 Botas: <span id="eqBota"></span></div>
     <div>🎩 Chapéu: <span id="eqChapeu"></span></div>
   </div>
@@ -248,8 +258,18 @@ function ganharXP(v){
     player.nivel++;
     player.xpProx=Math.floor(player.xpProx*1.5);
     log("⭐ Subiu para o nível "+player.nivel+"!");
+    log("🏅 Novo título: "+obterTitulo());
+
   }
 }
+
+/* ===== TÍTULO ===== */
+function obterTitulo(){
+  if(player.nivel <= 5) return "Peão";
+  if(player.nivel <= 10) return "Pistoleiro";
+  return "Lenda do Oeste";
+}
+
 
 /* ===== HUD ===== */
 function atualizar(){
@@ -261,6 +281,10 @@ function atualizar(){
   dinheiro.textContent=player.dinheiro;
   bancoValor.textContent=player.banco;
   statusTxt.textContent=player.status;
+
+  titulo.textContent = obterTitulo();
+  nivel.textContent = player.nivel;
+
 
   barEnergia.style.width=player.energia+"%";
   barBebedeira.style.width=player.bebedeira+"%";
