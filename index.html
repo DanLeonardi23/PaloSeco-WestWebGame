@@ -129,6 +129,12 @@ section button{
   cursor:pointer;
 }
 section button:hover{background:#3e2a1c;}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #3e2a1c;
+  border-color: #4a321f;
+}
 
 #log{
   height:600px;            /* ALTURA FIXA */
@@ -239,10 +245,10 @@ footer {
 </header>
 
 <section id="trabalhos" class="active">
-  <button onclick="trabalharestabulos()">Trabalhar nos estabulos</button>
-  <button onclick="roubar()">Roubar andarilho</button>
-  <button onclick="assaltardiligencia()">Assaltar diligência</button>
-  <button onclick="assaltartrem()">Assaltar trem</button>
+  <button id="btnEstabulos" onclick="trabalharestabulos()">Trabalhar nos estabulos</button>
+  <button id="btnAndarilho" onclick="roubar()">Roubar andarilho</button>
+  <button id="btnDiligencia" onclick="assaltardiligencia()">Assaltar diligência</button>
+  <button id="btnTrem" onclick="assaltartrem()">Assaltar trem</button>
 </section>
 
 <section id="saloon">
@@ -396,6 +402,18 @@ if(player.status === "Preso"){
 }
 
 
+
+  // Atualiza disponibilidade dos trabalhos
+  const btnEstabulos = document.getElementById("btnEstabulos");
+  const btnAndarilho = document.getElementById("btnAndarilho");
+  const btnDiligencia = document.getElementById("btnDiligencia");
+  const btnTrem = document.getElementById("btnTrem");
+
+  if(btnEstabulos) btnEstabulos.disabled = player.nivel > 5;
+  if(btnAndarilho) btnAndarilho.disabled = player.nivel < 5 || player.nivel > 10;
+  if(btnDiligencia) btnDiligencia.disabled = player.nivel < 10 || player.nivel > 15;
+  if(btnTrem) btnTrem.disabled = player.nivel < 15;
+
 }
 
 /* ===== AÇÕES ===== */
@@ -406,6 +424,7 @@ function podeAgir(c=0){
 }
 
 function trabalharestabulos(){
+  if(player.nivel > 5){ log("⚠️ Você é experiente demais para limpar bosta. (Max lvl 5)"); return; }
   if(!podeAgir(5)) return;
 
   player.energia -= 5;
@@ -418,6 +437,7 @@ function trabalharestabulos(){
 }
 
 function roubar(){
+  if(player.nivel < 5 || player.nivel > 10){ log("⚠️ Nível necessário: 5 a 10."); return; }
   if(!podeAgir(10)) return;
   player.energia -= 10;
   let chancePrisao = 0.4;
@@ -436,6 +456,7 @@ function roubar(){
 
 
 function assaltardiligencia(){
+  if(player.nivel < 10 || player.nivel > 15){ log("⚠️ Nível necessário: 10 a 15."); return; }
   if(!podeAgir(20)) return;
   player.energia -= 20;
   let chancePrisao = 0.7;
@@ -452,6 +473,7 @@ function assaltardiligencia(){
 
 
 function assaltartrem(){
+  if(player.nivel < 15){ log("⚠️ Nível necessário: 15+."); return; }
   if(!podeAgir(30)) return;
   player.energia -= 30;
   let chancePrisao = 0.9;
