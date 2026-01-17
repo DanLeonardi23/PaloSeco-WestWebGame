@@ -141,6 +141,7 @@ const eventosGerais = [
     nome: "Xerife de Olho",
     chance: 0.05,
     executar(){
+    if(player.bebedeira <= 50) return;
       preso();
       log("👮 O xerife estava de olho em você...");
     }
@@ -275,7 +276,7 @@ function assaltardiligencia(){
     preso();
     return;
   }
-  const ganho = random(20, 60);
+  const ganho = random(60, 100);
   player.dinheiro += ganho;
   ganharXP(20);
   log("🚚 Diligência assaltada! Lucro: $" + ganho + ".");
@@ -291,7 +292,7 @@ function assaltartrem(){
     preso();
     return;
   }
-  const ganho = random(80, 250);
+  const ganho = random(100, 250);
   player.dinheiro += ganho;
   ganharXP(40);
   log("🚂 Trem assaltado! Botim: $" + ganho + "!");
@@ -389,6 +390,32 @@ function cafe(){
   player.bebedeira = Math.max(0, player.bebedeira - reducaoBebedeira);
   player.energia = Math.min(100, player.energia + ganhoEnergia);
 }
+
+function curarSimples(){
+  const custo = 25;
+
+  if(player.vida >= player.vidaMax){
+    log("🏥 O médico diz: você já está inteiro.");
+    return;
+  }
+
+  if(player.dinheiro < custo){
+    log("💸 Você não tem dinheiro para o tratamento.");
+    return;
+  }
+
+  player.dinheiro -= custo;
+  player.vida = Math.min(player.vidaMax, player.vida + 1);
+
+  atualizarVida();
+
+  if(player.status === "Preso"){
+    log("🏥 Mesmo preso, você recebe cuidados médicos.");
+  }else{
+    log("🏥 O médico cuida dos seus ferimentos.");
+  }
+}
+
 
 
 function depositar(){
