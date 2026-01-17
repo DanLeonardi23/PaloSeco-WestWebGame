@@ -5,7 +5,10 @@ let player={
   energia:100,bebedeira:0,
   dinheiro:1,banco:0,
   status:"Livre",presoAte:0,
-  equip:{arma:false,bota:false,chapeu:false}
+  equip:{arma:false,bota:false,chapeu:false},
+  vidaMax: 5,
+  vida: 5,
+
 };
 
 const logDiv=document.getElementById("log");
@@ -24,8 +27,6 @@ function random(min, max){
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-
-
 function semDinheiro(){ log("💸 Você não tem dinheiro suficiente."); }
 
 function abrir(id){
@@ -36,6 +37,45 @@ function abrirPainel(id){
   document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
+
+/* ==== VIDA DO JOGADOR ===== */
+function atualizarVida(){
+  const div = document.getElementById("vida");
+  if(!div) return;
+
+  div.innerHTML = "";
+
+  for(let i = 0; i < player.vidaMax; i++){
+    const span = document.createElement("span");
+    span.classList.add("coracao");
+    span.innerText = "❤";
+
+    if(i < player.vida){
+      span.classList.add("cheio");
+    }
+
+    div.appendChild(span);
+  }
+}
+
+/* ===== DANO / VIDA ===== */
+function sofrerDano(valor = 1){
+  player.vida = Math.max(0, player.vida - valor);
+
+  atualizarVida();
+
+  if(player.vida <= 0){
+    log("💀 Você caiu desacordado na poeira do deserto.");
+    // FUTURO: hospital, médico, perda de tempo, custo, etc
+  } else {
+    log("❤️ Você perdeu " + valor + " ponto(s) de vida.");
+  }
+}
+
+
+
+
+
 
 /* ===== LEVEL ===== */
 function ganharXP(v){
@@ -57,6 +97,67 @@ function ganharXP(v){
     }
   }
 }
+
+/* ===== EVENTOS GERAIS ===== */
+
+const eventosGerais = [
+  {
+    nome: "Viajante Generoso",
+    chance: 0.15,
+    executar(){
+      const ganho = random(5, 20);
+      player.dinheiro += ganho;
+      log("🤠 Um viajante agradecido lhe dá $" + ganho + ".");
+    }
+  },
+  {
+    nome: "Briga de Saloon",
+    chance: 0.10,
+    executar(){
+        sofrerDano(1);
+    player.bebedeira += 10;
+      player.energia = Math.max(0, player.energia - 10);
+      log("🥊 Uma briga estoura perto de você. Sai machucado.");
+    }
+  },
+  {
+    nome: "Carteira Perdida",
+    chance: 0.08,
+    executar(){
+      const ganho = random(10, 30);
+      player.dinheiro += ganho;
+      log("👛 Você encontra uma carteira caída na lama. $" + ganho + ".");
+    }
+  },
+  {
+    nome: "Pregador Maluco",
+    chance: 0.06,
+    executar(){
+      player.bebedeira = Math.max(0, player.bebedeira - 10);
+      log("📖 Um pregador grita sobre o fim dos tempos. Você se sente sóbrio.");
+    }
+  },
+  {
+    nome: "Xerife de Olho",
+    chance: 0.05,
+    executar(){
+      preso();
+      log("👮 O xerife estava de olho em você...");
+    }
+  }
+];
+
+/* TENTA EVENTOS DA LISTA */
+
+function tentarEventos(lista){
+  lista.forEach(evento => {
+    if(Math.random() < evento.chance){
+      evento.executar();
+    }
+  });
+}
+
+
 
 
 /* ===== TÍTULO ===== */
@@ -117,7 +218,12 @@ if(player.status === "Preso"){
 }
 
 
+atualizarVida();
+
+
 }
+
+
 
 /* ===== AÇÕES ===== */
 function podeAgir(c=0){
@@ -136,6 +242,7 @@ function trabalharestabulos(){
   player.dinheiro += 5;
   ganharXP(5);
   log("🔨 Trabalhou nos estábulos.");
+  tentarEventos(eventosGerais);
 }
 
 function roubar(){
@@ -148,10 +255,13 @@ function roubar(){
     preso();
     return;
   }
+  
   const ganho = random(3, 15);
   player.dinheiro += ganho;
   ganharXP(10);
   log("🕵️ Roubou um andarilho e conseguiu $" + ganho + ".");
+
+  tentarEventos(eventosGerais);
 }
 
 
@@ -213,10 +323,11 @@ function preso(){
   player.presoAte = Date.now() + tempoFinal;
   const dinheiroPerdido = player.dinheiro;
   player.dinheiro = 0;
-  log("🚔 Você foi preso!");
+  log("🔒 Você foi preso!");
   log("💸 O xerife confisca $" + dinheiroPerdido + ".");
   log("⏳ Pena: " + (tempoFinal/1000) + " segundos (nível "+player.nivel+")");
 }
+
 
 
 function subornoPreso(){
@@ -343,3 +454,8 @@ log("");
 log("🌵 Bem vindo.");
 log("");
 atualizar();
+
+window.onload = () => {
+  atualizar();
+};
+

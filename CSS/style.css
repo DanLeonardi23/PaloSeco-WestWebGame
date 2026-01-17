@@ -57,6 +57,10 @@ h3{
 .panel{display:none;font-size:13px;}
 .panel.active{display:block;}
 
+/* ===== VIDA DO PERSONAGEM ===== */
+
+
+
 /* ===== BARRAS ===== */
 .bar{
   background:#120b06;
@@ -164,6 +168,23 @@ section button:hover{background:#3e2a1c;}
 
 .log-line:nth-child(3){
   opacity:0.55;
+}
+
+#vida{
+  display: flex;
+  gap: 6px;
+  margin: 6px 0 10px 0;
+}
+
+.coracao{
+  font-size: 20px;
+  color: #8b0000;
+  opacity: 0.3;
+  transition: opacity 0.3s;
+}
+
+.coracao.cheio{
+  opacity: 1;
 }
 
 /* ===== FOOTER ===== */
