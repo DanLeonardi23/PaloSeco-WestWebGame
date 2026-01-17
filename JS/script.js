@@ -1,5 +1,6 @@
 /* ===== ESTADO ===== */
 let logs=[];
+let morto = false;
 let player={
   nivel:1,xp:0,xpProx:20,
   energia:100,bebedeira:0,
@@ -8,6 +9,7 @@ let player={
   equip:{arma:false,bota:false,chapeu:false},
   vidaMax: 5,
   vida: 5,
+  morto: false
 
 };
 
@@ -60,17 +62,23 @@ function atualizarVida(){
 
 /* ===== DANO / VIDA ===== */
 function sofrerDano(valor = 1){
-  player.vida = Math.max(0, player.vida - valor);
+  if(player.morto) return;
 
+  player.vida = Math.max(0, player.vida - valor);
   atualizarVida();
 
   if(player.vida <= 0){
-    log("💀 Você caiu desacordado na poeira do deserto.");
-    // FUTURO: hospital, médico, perda de tempo, custo, etc
+    player.morto = true;
+    player.status = "Morto";
+
+    log("💀 Você morreu.");
+    log("🌵 O deserto não perdoa erros.");
+
   } else {
     log("❤️ Você perdeu " + valor + " ponto(s) de vida.");
   }
 }
+
 
 
 
@@ -221,17 +229,36 @@ if(player.status === "Preso"){
 
 atualizarVida();
 
+if(player.morto){
+  statusTxt.textContent = "Morto";
+}
+
+
 
 }
 
 
 
 /* ===== AÇÕES ===== */
-function podeAgir(c=0){
-  if(player.status==="Preso"){log("🔒 Você está preso.");return false;}
-  if(player.energia<c){log("😴 Energia insuficiente.");return false;}
+function podeAgir(c = 0){
+  if(player.morto){
+    log("☠️ Você está morto. Nada pode ser feito.");
+    return false;
+  }
+
+  if(player.status === "Preso"){
+    log("🔒 Você está preso.");
+    return false;
+  }
+
+  if(player.energia < c){
+    log("😴 Energia insuficiente.");
+    return false;
+  }
+
   return true;
 }
+
 
 function trabalharestabulos(){
   if(!podeAgir(5)) return;
@@ -371,9 +398,9 @@ function leite(){
 
 function cafe(){
   if(estaPreso()) return;
-  if(player.dinheiro < 10){ semDinheiro(); return; }
+  if(player.dinheiro < 20){ semDinheiro(); return; }
 
-  player.dinheiro -= 10;
+  player.dinheiro -= 20;
 
   let reducaoBebedeira = 20;
   let ganhoEnergia = 5;
@@ -465,18 +492,22 @@ function modificadorPrisao(){
 /* ===== LOOPS ===== */
 setInterval(atualizar,1000);
 setInterval(()=>{
-  if(player.status==="Livre"){
-    player.energia=Math.min(100,player.energia+1);
-    player.bebedeira=Math.max(0,player.bebedeira-1);
+  if(player.morto) return;
+
+  if(player.status === "Livre"){
+    player.energia = Math.min(100, player.energia + 1);
+    player.bebedeira = Math.max(0, player.bebedeira - 1);
   }
 },5000);
+
+
 
 /* ===== INIT ===== */
 
 log("");
 log("Cuidado.");
-log("Cada passo conta.");
 log("Cada ato pesa.");
+log("Cada passo conta.");
 log("");
 log("🌵 Bem vindo.");
 log("");
