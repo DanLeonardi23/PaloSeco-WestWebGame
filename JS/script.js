@@ -1,7 +1,7 @@
 /* ===== ESTADO ===== */
 let logs=[];
-let morto = false;
 let player={
+  nome:"",
   nivel:1,xp:0,xpProx:20,
   energia:100,bebedeira:0,
   dinheiro:1,banco:0,
@@ -9,9 +9,28 @@ let player={
   equip:{arma:false,bota:false,chapeu:false},
   vidaMax: 5,
   vida: 5,
-  morto: false
-
+  morto:false
 };
+
+function iniciarJogo(){
+  const input = document.getElementById("nomeJogador");
+  const nome = input.value.trim();
+
+  if(nome.length < 2){
+    log("✏️ Escolha um nome válido.");
+    return;
+  }
+
+  player.nome = nome;
+
+  document.querySelector("h3").textContent = "⭐ " + player.nome + " ⭐";
+
+  document.getElementById("startScreen").style.display = "none";
+
+  log("🌵 " + player.nome + " chega à cidade de Palo Seco.");
+}
+
+
 
 const logDiv=document.getElementById("log");
 
@@ -509,7 +528,6 @@ log("Cuidado.");
 log("Cada ato pesa.");
 log("Cada passo conta.");
 log("");
-log("🌵 Bem vindo.");
 log("");
 atualizar();
 
