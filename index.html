@@ -65,55 +65,55 @@
 
   <div id="tempoInfo" class="hud-info">Dia 1</div>
 
+  <div class="info-bloco">
 
-  <div class="tabs">
-    <button onclick="abrirPainel('status')">Status</button>
-    <button onclick="abrirPainel('equip')">Equip</button>
-  </div>
-
-  <div id="status" class="panel active">
     
+    
+    <div id="status" class="panel active">
+      
+      
+      <div>Nível: <span id="nivel"></span></div>
+      
+      <div id="vida"></div>
+      <!-- corações gerados via JS -->
+      
+      <div>XP: <span id="xp"></span>/<span id="xpProx"></span></div>
+      <div class="bar"><div id="barXP" class="fill xp"></div></div>
+      
+      <div>Energia: <span id="energia"></span>%</div>
+      <div class="bar"><div id="barEnergia" class="fill energy"></div></div>
+      
+      <div>Bebedeira: <span id="bebedeira"></span>%</div>
+      <div class="bar"><div id="barBebedeira" class="fill drunk"></div></div>
+      
+      <div>Status: <span id="statusTxt"></span></div>
+      <div>💰 $<span id="dinheiro"></span></div>
+      <div>🏦 $<span id="bancoValor"></span></div>
+      <div id="prisao"></div>
+    </div>
 
-    <div>Nível: <span id="nivel"></span></div>
-
-    <div id="vida"></div>
-  <!-- corações gerados via JS -->
-
-    <div>XP: <span id="xp"></span>/<span id="xpProx"></span></div>
-    <div class="bar"><div id="barXP" class="fill xp"></div></div>
-
-    <div>Energia: <span id="energia"></span>%</div>
-    <div class="bar"><div id="barEnergia" class="fill energy"></div></div>
-
-    <div>Bebedeira: <span id="bebedeira"></span>%</div>
-    <div class="bar"><div id="barBebedeira" class="fill drunk"></div></div>
-
-    <div>Status: <span id="statusTxt"></span></div>
-    <div>💰 $<span id="dinheiro"></span></div>
-    <div>🏦 $<span id="bancoValor"></span></div>
-    <div id="prisao"></div>
+    <hr class="separador">
+  
+    <p>🔫 Arma: <span id="eqArma"></span></p>
+    <p>🥾 Bota: <span id="eqBota"></span></p>
+    <p>🎩 Chapéu: <span id="eqChapeu"></span></p>
   </div>
-
-  <div id="equip" class="panel">
-    <div>🔫 Arma: <span id="eqArma"></span></div>
-    <div>👢 Botas: <span id="eqBota"></span></div>
-    <div>🎩 Chapéu: <span id="eqChapeu"></span></div>
-  </div>
-</aside>
-
-<main>
-  <h1>PALOSECO</h1>
-
-  <header>
-    <button onclick="abrir('trabalhos')">⚒️ Trabalhos</button>
-    <button onclick="abrir('saloon')">🍻 Saloon</button>
-    <button onclick="abrir('banco')">🏦 Banco</button>
-    <button onclick="abrir('xerife')">⭐ Xerife</button>
-    <button onclick="abrir('loja')">🏬 Loja</button>
-    <button onclick="abrir('farmacia')">🏥 Farmácia</button>
-  </header>
-
-  <section id="trabalhos" class="active">
+    
+  </aside>
+  
+  <main>
+    <h1>PALOSECO</h1>
+    
+    <header>
+      <button onclick="abrir('trabalhos')">⚒️ Trabalhos</button>
+      <button onclick="abrir('saloon')">🍻 Saloon</button>
+      <button onclick="abrir('banco')">🏦 Banco</button>
+      <button onclick="abrir('xerife')">⭐ Xerife</button>
+      <button onclick="abrir('loja')">🏬 Loja</button>
+      <button onclick="abrir('farmacia')">🏥 Farmácia</button>
+    </header>
+    
+    <section id="trabalhos" class="active">
     <button onclick="trabalharestabulos()">🐴 Trabalhar nos estábulos</button>
     <button onclick="roubar()">🚶‍♂️ Roubar andarilho</button>
     <button onclick="assaltardiligencia()">📦 Assaltar diligência</button>

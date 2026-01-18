@@ -42,6 +42,14 @@ h3{
   margin-top: 10px;
 }
 
+.separador{
+  border: none;
+  border-top: 2px solid #5a3e2b;
+  margin: 12px 0;
+  opacity: 0.8;
+}
+
+
 /* ===== TABS ===== */
 .tabs button{
   width:100%;
