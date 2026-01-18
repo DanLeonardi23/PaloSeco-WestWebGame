@@ -259,6 +259,22 @@ section button:hover{background:#3e2a1c;}
   background:#4a321f;
 }
 
+/* ===== INTRO / ALERTA ===== */
+#introScreen{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.75);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9998;
+}
+
+#introScreen .start-box{
+  max-width:420px;
+}
+
+
 
 /* ===== GAME OVER ===== */
 #gameOverScreen{
