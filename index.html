@@ -25,6 +25,17 @@
   </div>
 </div>
 
+<div id="gameOverScreen">
+  <div class="start-box">
+    <h1>ACABOU PARA VOCÊ!</h1>
+    <p>Você morreu.</p>
+
+    <p id="diasFinais"></p>
+
+    <button onclick="voltarInicio()">Voltar ao início</button>
+  </div>
+</div>
+
 
 <aside>
   <div class="avatar">
@@ -34,6 +45,9 @@
   <h3>⭐Belchior Bill⭐</h3>
 
   <div class="titulo">Título: <span id="titulo"></span></div>
+
+  <div id="tempoInfo" class="hud-info">Dia 1</div>
+
 
   <div class="tabs">
     <button onclick="abrirPainel('status')">Status</button>
@@ -74,19 +88,19 @@
   <h1>PALOSECO</h1>
 
   <header>
-    <button onclick="abrir('trabalhos')">Trabalhos</button>
-    <button onclick="abrir('saloon')">Saloon</button>
-    <button onclick="abrir('banco')">Banco</button>
-    <button onclick="abrir('xerife')">Xerife</button>
-    <button onclick="abrir('loja')">Loja</button>
+    <button onclick="abrir('trabalhos')">⚒️ Trabalhos</button>
+    <button onclick="abrir('saloon')">🍻 Saloon</button>
+    <button onclick="abrir('banco')">🏦 Banco</button>
+    <button onclick="abrir('xerife')">⭐ Xerife</button>
+    <button onclick="abrir('loja')">🏬 Loja</button>
     <button onclick="abrir('farmacia')">🏥 Farmácia</button>
   </header>
 
   <section id="trabalhos" class="active">
-    <button onclick="trabalharestabulos()">Trabalhar nos estábulos</button>
-    <button onclick="roubar()">Roubar andarilho</button>
-    <button onclick="assaltardiligencia()">Assaltar diligência</button>
-    <button onclick="assaltartrem()">Assaltar trem</button>
+    <button onclick="trabalharestabulos()">🐴 Trabalhar nos estábulos</button>
+    <button onclick="roubar()">🚶‍♂️ Roubar andarilho</button>
+    <button onclick="assaltardiligencia()">📦 Assaltar diligência</button>
+    <button onclick="assaltartrem()">🚂 Assaltar trem</button>
   </section>
 
   <section id="saloon">

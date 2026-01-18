@@ -57,10 +57,16 @@ h3{
 .panel{display:none;font-size:13px;}
 .panel.active{display:block;}
 
-/* ===== VIDA DO PERSONAGEM ===== */
-
-
-
+/* ===== CONTADOR DIA ===== */
+.hud-info{
+  margin:6px 0;
+  padding:6px;
+  background:#120b06;
+  border:1px solid #6b4a33;
+  border-radius:6px;
+  font-size:14px;
+  text-align:center;
+}
 /* ===== BARRAS ===== */
 .bar{
   background:#120b06;
@@ -199,13 +205,15 @@ section button:hover{background:#3e2a1c;}
 }
 
 .start-box{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background:#1a120b;
-  border:3px solid #7a5236;
-  padding:40px;
-  text-align:center;
-  width:320px;
-  box-shadow:0 0 40px rgba(0,0,0,.7);
+  padding:50px;
+  border:3px solid #5a3e2b;
+  border-radius:10px;
 }
+
 
 .start-box h1{
   margin:0 0 10px;
@@ -221,13 +229,21 @@ section button:hover{background:#3e2a1c;}
 
 .start-box input{
   width:100%;
+  max-width: 260%;
   padding:8px;
-  margin-bottom:15px;
+  margin-bottom:15px;;
   background:#2f1f14;
   border:1px solid #6b4a33;
   color:#f5e6c8;
   text-align:center;
 }
+
+.start-box input:focus{
+  outline: none;
+  box-shadow: 0 0 6px #caa66a;
+  border-color: #caa66a;
+}
+
 
 .start-box button{
   width:100%;
@@ -241,6 +257,27 @@ section button:hover{background:#3e2a1c;}
 
 .start-box button:hover{
   background:#4a321f;
+}
+
+
+/* ===== GAME OVER ===== */
+#gameOverScreen{
+  position:fixed;
+  inset:0;
+  background:#000000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+#gameOverScreen .start-box{
+  color:#c9c9c9;
+  border-color:#7a5236;
+}
+
+#gameOverScreen h1{
+  color:#c9c9c9;
 }
 
 

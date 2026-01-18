@@ -1,5 +1,9 @@
 /* ===== ESTADO ===== */
 let logs=[];
+let tempo = {
+  minutos: 0,
+  dia: 1
+};
 let player={
   nome:"",
   nivel:1,xp:0,xpProx:20,
@@ -9,7 +13,8 @@ let player={
   equip:{arma:false,bota:false,chapeu:false},
   vidaMax: 5,
   vida: 5,
-  morto:false
+  morto:false,
+  diasVivos: 1
 };
 
 function iniciarJogo(){
@@ -79,6 +84,21 @@ function atualizarVida(){
   }
 }
 
+function avancarTempo(minutos) {
+  tempo.minutos += minutos;
+
+  while (tempo.minutos >= 1440) {
+    tempo.minutos -= 1440;
+    tempo.dia++;
+    player.diasVivos++;
+
+    log(`🌅 Um novo dia começa — Dia ${tempo.dia}`);
+  }
+
+  atualizarHUD();
+}
+
+
 /* ===== DANO / VIDA ===== */
 function sofrerDano(valor = 1){
   if(player.morto) return;
@@ -88,20 +108,18 @@ function sofrerDano(valor = 1){
 
   if(player.vida <= 0){
     player.morto = true;
-    player.status = "Morto";
+    log("💀 Acabou para você. Você morreu.");
 
-    log("💀 Você morreu.");
-    log("🌵 O deserto não perdoa erros.");
+     const dias = document.getElementById("diasFinais");
+  if(dias){
+    dias.innerText = `Sobreviveu por ${player.diasVivos} dias`;
+  }
 
-  } else {
+    document.getElementById("gameOverScreen").style.display = "flex";
+  }else{
     log("❤️ Você perdeu " + valor + " ponto(s) de vida.");
   }
 }
-
-
-
-
-
 
 
 /* ===== LEVEL ===== */
@@ -252,6 +270,7 @@ if(player.morto){
   statusTxt.textContent = "Morto";
 }
 
+document.getElementById("tempoInfo").innerText = `Dia ${tempo.dia}`;
 
 
 }
@@ -259,24 +278,22 @@ if(player.morto){
 
 
 /* ===== AÇÕES ===== */
-function podeAgir(c = 0){
+function podeAgir(c=0){
   if(player.morto){
-    log("☠️ Você está morto. Nada pode ser feito.");
+    log("☠️ Você está morto.");
     return false;
   }
-
-  if(player.status === "Preso"){
+  if(player.status==="Preso"){
     log("🔒 Você está preso.");
     return false;
   }
-
-  if(player.energia < c){
+  if(player.energia<c){
     log("😴 Energia insuficiente.");
     return false;
   }
-
   return true;
 }
+
 
 
 function trabalharestabulos(){
@@ -290,6 +307,7 @@ function trabalharestabulos(){
   ganharXP(5);
   log("🔨 Trabalhou nos estábulos.");
   tentarEventos(eventosGerais);
+  avancarTempo(120);
 }
 
 function roubar(){
@@ -309,6 +327,7 @@ function roubar(){
   log("🕵️ Roubou um andarilho e conseguiu $" + ganho + ".");
 
   tentarEventos(eventosGerais);
+  avancarTempo(30);
 }
 
 
@@ -326,6 +345,7 @@ function assaltardiligencia(){
   player.dinheiro += ganho;
   ganharXP(20);
   log("🚚 Diligência assaltada! Lucro: $" + ganho + ".");
+  avancarTempo(60);
 }
 
 
@@ -342,6 +362,7 @@ function assaltartrem(){
   player.dinheiro += ganho;
   ganharXP(40);
   log("🚂 Trem assaltado! Botim: $" + ganho + "!");
+  avancarTempo(120);
 }
 
 
@@ -351,6 +372,7 @@ function falhaPorBebedeira(chance = 0.4){
     return true;
   }
   return false;
+
 }
 
 /* ===== SISTEMAS ===== */
@@ -506,6 +528,15 @@ function modificadorPrisao(){
   return Math.min(0.3, (player.bebedeira - 50) / 50 * 0.3);
 }
 
+function voltarInicio(){
+  resetarJogo();
+
+  atualizarVida();
+  atualizar();
+
+  document.getElementById("gameOverScreen").style.display = "none";
+  document.getElementById("startScreen").style.display = "flex";
+}
 
 
 /* ===== LOOPS ===== */
@@ -519,16 +550,48 @@ setInterval(()=>{
   }
 },5000);
 
+if (player.preso) {
+  avancarTempo(1);
+}
 
+function resetarJogo(){
+  // ===== RESET DO TEMPO =====
+  tempo.minutos = 0;
+  tempo.dia = 1;
+
+  // ===== RESET DO PLAYER =====
+  player.nivel = 1;
+  player.xp = 0;
+  player.xpProx = 20;
+
+  player.energia = 100;
+  player.bebedeira = 0;
+
+  player.dinheiro = 1;
+  player.banco = 0;
+
+  player.status = "Livre";
+  player.presoAte = 0;
+
+  player.equip = { arma:false, bota:false, chapeu:false };
+
+  player.vidaMax = 5;
+  player.vida = 5;
+  player.morto = false;
+
+  player.diasVivos = 1;
+
+  logs = [];
+}
 
 /* ===== INIT ===== */
 
 log("");
+log("");
+log("");
 log("Cuidado.");
 log("Cada ato pesa.");
 log("Cada passo conta.");
-log("");
-log("");
 atualizar();
 
 window.onload = () => {
