@@ -33,7 +33,15 @@ function iniciarJogo(){
   document.getElementById("startScreen").style.display = "none";
 
   log("🌵 " + player.nome + " chega à cidade de Palo Seco.");
+
+  document.getElementById("introScreen").style.display = "flex";
+
 }
+
+function fecharIntro(){
+  document.getElementById("introScreen").style.display = "none";
+}
+
 
 
 
