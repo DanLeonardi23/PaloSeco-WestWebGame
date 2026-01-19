@@ -33,15 +33,7 @@ function iniciarJogo(){
   document.getElementById("startScreen").style.display = "none";
 
   log("🌵 " + player.nome + " chega à cidade de Palo Seco.");
-
-  document.getElementById("introScreen").style.display = "flex";
-
 }
-
-function fecharIntro(){
-  document.getElementById("introScreen").style.display = "none";
-}
-
 
 
 
@@ -373,6 +365,41 @@ function assaltartrem(){
   avancarTempo(120);
 }
 
+function apostarCassino(){
+  if(!podeAgir()) return;
+
+  const input = document.getElementById("apostaValor");
+  const valor = parseInt(input.value);
+
+  if(isNaN(valor) || valor <= 0){
+    log("🎰 Escolha um valor válido para apostar.");
+    return;
+  }
+
+  if(valor > player.dinheiro){
+    log("💸 Você não tem dinheiro suficiente.");
+    return;
+  }
+
+  // tira o dinheiro primeiro
+  player.dinheiro -= valor;
+
+  const ganhou = Math.random() < 0.5;
+
+  if(ganhou){
+    const premio = valor * 2;
+    player.dinheiro += premio;
+    log("🍀 Sorte grande! Você ganhou $" + premio + ".");
+  }else{
+    log("💀 A casa venceu. Você perdeu $" + valor + ".");
+  }
+
+  avancarTempo(30);
+  atualizar();
+}
+
+
+
 
 function falhaPorBebedeira(chance = 0.4){
   if(player.bebedeira > 50 && Math.random() < chance){
@@ -545,6 +572,9 @@ function voltarInicio(){
   document.getElementById("gameOverScreen").style.display = "none";
   document.getElementById("startScreen").style.display = "flex";
 }
+
+
+
 
 
 /* ===== LOOPS ===== */

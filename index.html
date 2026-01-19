@@ -111,6 +111,8 @@
       <button onclick="abrir('xerife')">⭐ Xerife</button>
       <button onclick="abrir('loja')">🏬 Loja</button>
       <button onclick="abrir('farmacia')">🏥 Farmácia</button>
+      <button onclick="abrir('cassino')">🎰 Cassino</button>
+
     </header>
     
     <section id="trabalhos" class="active">
@@ -143,11 +145,18 @@
   </section>
 
   <section id="farmacia">
-  <div class="panel active">
     <button onclick="curarSimples()">💊 Curativo simples ($25)</button>
-    <!-- espaço para futuros itens -->
-  </div>
+  </section>
+
+  <section id="cassino">
+  <input 
+    type="number" 
+    id="apostaValor" 
+    placeholder="Valor da aposta"
+    min="1"/>
+  <button onclick="apostarCassino()">Apostar (Dobro ou Nada)</button>
 </section>
+
 
 
 

@@ -304,6 +304,17 @@ section button:hover{background:#3e2a1c;}
   color:#c9c9c9;
 }
 
+#cassino input{
+  width:100%;
+  padding:8px;
+  margin:8px 0;
+  background:#2f1f14;
+  border:1px solid #6b4a33;
+  color:#f5e6c8;
+  text-align:center;
+}
+
+
 
 /* ===== FOOTER ===== */
 footer {
