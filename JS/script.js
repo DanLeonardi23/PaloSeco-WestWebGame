@@ -1,4 +1,6 @@
 /* ===== ESTADO ===== */
+
+
 let logs=[];
 let tempo = {
   minutos: 0,
@@ -16,6 +18,8 @@ let player={
   morto:false,
   diasVivos: 1
 };
+
+
 
 function iniciarJogo(){
   const input = document.getElementById("nomeJogador");
@@ -373,6 +377,15 @@ function assaltartrem(){
   avancarTempo(120);
 }
 
+/* ===== CASSINO ===== */
+
+function bloquearCassino(bloquear = true){
+  document.querySelectorAll("#cassino button").forEach(btn=>{
+    btn.classList.toggle("botao-bloqueado", bloquear);
+  });
+}
+
+
 function apostarCassino(){
   if(!podeAgir()) return;
 
@@ -405,6 +418,288 @@ function apostarCassino(){
   avancarTempo(30);
   atualizar();
 }
+
+function cacaNiquel(){
+  if(!podeAgir()) return;
+
+  const aposta = parseInt(document.getElementById("apostaValor").value);
+  const display = document.getElementById("cassinoDisplay");
+
+  if(isNaN(aposta) || aposta <= 0){
+    log("🎰 Insira um valor válido.");
+    return;
+  }
+  if(aposta > player.dinheiro){
+    log("💸 Dinheiro insuficiente.");
+    return;
+  }
+
+  player.dinheiro -= aposta;
+  atualizar();
+
+  bloquearCassino(true);
+  display.classList.add("cassino-rodando");
+
+  const simbolos = ["🍒","🔔","💎","⭐","🍋"];
+
+  let tempo = 0;
+  const rolar = setInterval(()=>{
+    const r1 = simbolos[random(0, simbolos.length-1)];
+    const r2 = simbolos[random(0, simbolos.length-1)];
+    const r3 = simbolos[random(0, simbolos.length-1)];
+    display.textContent = `${r1} ${r2} ${r3}`;
+    tempo += 200;
+  },200);
+
+  setTimeout(()=>{
+    clearInterval(rolar);
+    display.classList.remove("cassino-rodando");
+
+    const r1 = simbolos[random(0, simbolos.length-1)];
+    const r2 = simbolos[random(0, simbolos.length-1)];
+    const r3 = simbolos[random(0, simbolos.length-1)];
+
+    display.textContent = `${r1} ${r2} ${r3}`;
+
+    if(r1 === r2 && r2 === r3){
+      const premio = aposta * 5;
+      player.dinheiro += premio;
+      log("💰 JACKPOT! Você ganhou $" + premio);
+    }
+    else if(r1 === r2 || r2 === r3 || r1 === r3){
+      const premio = aposta * 2;
+      player.dinheiro += premio;
+      log("✨ Boa! Retorno de $" + premio);
+    }
+    else{
+      log("💀 Nada feito. A casa venceu.");
+    }
+
+    bloquearCassino(false);
+    avancarTempo(10);
+    atualizar();
+
+  }, 1800);
+}
+
+
+/* ===== DADOS - FÍSICA FAKE ===== */
+
+function apostarParImpar(escolha){
+  if(!podeAgir()) return;
+
+  const aposta = parseInt(document.getElementById("apostaValor").value);
+  if(isNaN(aposta) || aposta <= 0){
+    log("🎲 Escolha um valor válido.");
+    return;
+  }
+  if(aposta > player.dinheiro){
+    log("💸 Dinheiro insuficiente.");
+    return;
+  }
+
+  player.dinheiro -= aposta;
+  atualizar();
+
+  const d1 = document.getElementById("dado1");
+  const d2 = document.getElementById("dado2");
+
+  d1.innerText = "?";
+  d2.innerText = "?";
+
+  d1.classList.add("rolando");
+  d2.classList.add("rolando");
+
+  log(`🎲 Apostou em ${escolha.toUpperCase()}...`);
+
+  setTimeout(()=>{
+    const v1 = random(1,6);
+    const v2 = random(1,6);
+    const soma = v1 + v2;
+
+    d1.classList.remove("rolando");
+    d2.classList.remove("rolando");
+
+    d1.innerText = v1;
+    d2.innerText = v2;
+
+    const resultado = soma % 2 === 0 ? "par" : "impar";
+
+    if(resultado === escolha){
+      const premio = aposta * 2;
+      player.dinheiro += premio;
+      log(`🍀 ${v1} + ${v2} = ${soma} (${resultado.toUpperCase()}) — Você venceu! +$${premio}`);
+    }else{
+      log(`💀 ${v1} + ${v2} = ${soma} (${resultado.toUpperCase()}) — A casa venceu.`);
+    }
+
+    avancarTempo(15);
+    atualizar();
+
+  }, 900);
+}
+
+
+
+/* ===== BLACKJACK ===== */
+
+/* ===== BLACKJACK ISOLADO ===== */
+
+let bj = {
+  ativo:false,
+  aposta:0,
+  jogador:[],
+  dealer:[]
+};
+
+function bjLimparMesa(){
+  document.getElementById("playerHand").innerHTML = "";
+  document.getElementById("dealerHand").innerHTML = "";
+}
+
+function bjCartaAleatoria(){
+  const valores = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+  const naipes = ["♠","♥","♦","♣"];
+  return valores[random(0,12)] + naipes[random(0,3)];
+}
+
+function bjCriarCarta(valor, verso=false){
+  const carta = document.createElement("div");
+  carta.className = "carta";
+  if(verso){
+    carta.classList.add("verso");
+  }else{
+    carta.innerText = valor;
+  }
+  return carta;
+}
+
+function bjDarCarta(maoId, valor, verso=false){
+  const mao = document.getElementById(maoId);
+  const carta = bjCriarCarta(valor, verso);
+  mao.appendChild(carta);
+  return carta;
+}
+
+function bjTotal(mao){
+  let total = 0;
+  let ases = 0;
+
+  mao.forEach(c=>{
+    let v = c.slice(0,-1);
+    if(["J","Q","K"].includes(v)) total += 10;
+    else if(v === "A"){
+      total += 11;
+      ases++;
+    }else total += parseInt(v);
+  });
+
+  while(total > 21 && ases > 0){
+    total -= 10;
+    ases--;
+  }
+  return total;
+}
+
+/* ===== AÇÕES ===== */
+
+function bjIniciar(){
+  if(!podeAgir()) return;
+
+  const aposta = parseInt(document.getElementById("apostaValor").value);
+  if(isNaN(aposta) || aposta <= 0){
+    log("🃏 Aposta inválida.");
+    return;
+  }
+  if(aposta > player.dinheiro){
+    log("💸 Dinheiro insuficiente.");
+    return;
+  }
+
+  player.dinheiro -= aposta;
+  bjLimparMesa();
+
+  bj = {
+    ativo:true,
+    aposta,
+    jogador:[],
+    dealer:[]
+  };
+
+  // jogador
+  for(let i=0;i<2;i++){
+    const c = bjCartaAleatoria();
+    bj.jogador.push(c);
+    bjDarCarta("playerHand", c);
+  }
+
+  // dealer
+  const c1 = bjCartaAleatoria();
+  bj.dealer.push(c1);
+  bjDarCarta("dealerHand", "?", true);
+
+  const c2 = bjCartaAleatoria();
+  bj.dealer.push(c2);
+  setTimeout(()=> bjDarCarta("dealerHand", c2),300);
+
+  log("🃏 Blackjack iniciado.");
+  atualizar();
+}
+
+function bjComprar(){
+  if(!bj.ativo) return;
+
+  const c = bjCartaAleatoria();
+  bj.jogador.push(c);
+  bjDarCarta("playerHand", c);
+
+  const total = bjTotal(bj.jogador);
+  log("🃏 Sua mão: "+total);
+
+  if(total > 21){
+    bj.ativo = false;
+    log("💀 Você estourou!");
+    avancarTempo(20);
+  }
+}
+
+function bjParar(){
+  if(!bj.ativo) return;
+
+  // Dealer compra até no mínimo 17
+  while(bj.dealer < 17){
+    bj.dealer += random(1,11);
+  }
+
+  log(`🃏 Dealer parou com ${bj.dealer}`);
+
+  // VERIFICAÇÕES CORRETAS
+  if(bj.jogador > 21){
+    log("💀 Você estourou. A casa venceu.");
+  }
+  else if(bj.dealer > 21){
+    const premio = bj.aposta * 2;
+    player.dinheiro += premio;
+    log("🏆 Dealer estourou! Você venceu +" + premio);
+  }
+  else if(bj.jogador > bj.dealer){
+    const premio = bj.aposta * 2;
+    player.dinheiro += premio;
+    log("🏆 Você venceu! +" + premio);
+  }
+  else if(bj.jogador === bj.dealer){
+    player.dinheiro += bj.aposta; // devolve aposta
+    log("🤝 Empate. A aposta foi devolvida.");
+  }
+  else{
+    log("💀 Dealer venceu.");
+  }
+
+  bj.ativo = false;
+  avancarTempo(20);
+  atualizar();
+}
+
 
 
 
@@ -629,6 +924,197 @@ function resetarJogo(){
 
   logs = [];
 }
+
+let blackjack = {
+  ativo:false,
+  aposta:0,
+  baralho:[],
+  player:[],
+  dealer:[],
+};
+
+function criarBaralho(){
+  const naipes = ["♠","♥","♦","♣"];
+  const valores = [
+    {nome:"A", valor:11},
+    {nome:"2", valor:2},{nome:"3", valor:3},{nome:"4", valor:4},
+    {nome:"5", valor:5},{nome:"6", valor:6},{nome:"7", valor:7},
+    {nome:"8", valor:8},{nome:"9", valor:9},{nome:"10", valor:10},
+    {nome:"J", valor:10},{nome:"Q", valor:10},{nome:"K", valor:10}
+  ];
+
+  let baralho=[];
+  naipes.forEach(n=>{
+    valores.forEach(v=>{
+      baralho.push({...v, texto:v.nome+n});
+    });
+  });
+
+  return baralho.sort(()=>Math.random()-0.5);
+}
+
+function calcularTotal(mao){
+  let total = mao.reduce((s,c)=>s+c.valor,0);
+  let ases = mao.filter(c=>c.nome==="A").length;
+
+  while(total > 21 && ases > 0){
+    total -= 10;
+    ases--;
+  }
+  return total;
+}
+
+
+function renderMao(id, mao, ocultarPrimeira=false){
+  const div = document.getElementById(id);
+  div.innerHTML = "";
+
+  mao.forEach((c, i)=>{
+    const carta = document.createElement("div");
+    carta.className = "carta";
+
+    const inner = document.createElement("div");
+    inner.className = "carta-inner";
+
+    const frente = document.createElement("div");
+    frente.className = "carta-face carta-frente";
+    frente.innerText = c.texto;
+
+    const verso = document.createElement("div");
+    verso.className = "carta-face carta-verso";
+
+    inner.appendChild(verso);
+    inner.appendChild(frente);
+    carta.appendChild(inner);
+
+    // 👉 somente a PRIMEIRA carta do dealer começa fechada
+    if(ocultarPrimeira && i === 0){
+      // fica fechada
+    }else{
+      carta.classList.add("aberta");
+    }
+
+    div.appendChild(carta);
+  });
+}
+
+
+
+
+function iniciarBlackjack(){
+
+  if(blackjack.ativo){
+    log("🛑 A rodada já está em andamento.");
+    return;
+  }
+
+
+
+
+  const aposta = parseInt(document.getElementById("apostaValor").value);
+
+  if(isNaN(aposta) || aposta <= 0){
+    log("🃏 Aposta inválida.");
+    return;
+  }
+  if(aposta > player.dinheiro){
+    log("💸 Dinheiro insuficiente.");
+    return;
+  }
+
+  player.dinheiro -= aposta;
+
+  blackjack = {
+    ativo:true,
+    aposta,
+    baralho: criarBaralho(),
+    player: [],
+    dealer: []
+  };
+
+  // === CARTAS DO JOGADOR ===
+blackjack.player.push(blackjack.baralho.pop());
+blackjack.player.push(blackjack.baralho.pop());
+
+// === CARTAS DO DEALER ===
+blackjack.dealer.push(blackjack.baralho.pop()); // carta FECHADA
+blackjack.dealer.push(blackjack.baralho.pop()); // carta ABERTA
+
+
+  
+
+  renderMao("playerHand", blackjack.player);
+  renderMao("dealerHand", blackjack.dealer, true);
+
+
+  document.getElementById("playerTotal").innerText =
+    "Total: " + calcularTotal(blackjack.player);
+
+  document.getElementById("dealerTotal").innerText =
+    "Dealer: ?";
+
+  log("🃏 Blackjack iniciado.");
+}
+
+function pedirCarta(){
+  if(!blackjack.ativo) return;
+
+  blackjack.player.push(blackjack.baralho.pop());
+  renderMao("playerHand", blackjack.player);
+
+  const total = calcularTotal(blackjack.player);
+  document.getElementById("playerTotal").innerText = "Total: "+total;
+
+  if(total > 21){
+    log("💀 Você estourou!");
+    blackjack.ativo=false;
+  }
+}
+
+function pararBlackjack(){
+  if(!blackjack.ativo) return;
+
+
+  while(calcularTotal(blackjack.dealer) < 17){
+    blackjack.dealer.push(blackjack.baralho.pop());
+  }
+
+  renderMao("dealerHand", blackjack.dealer);
+
+setTimeout(()=>{
+  document
+    .querySelectorAll("#dealerHand .carta")
+    .forEach(c => c.classList.add("aberta"));
+},100);
+
+
+
+
+
+  const playerTotal = calcularTotal(blackjack.player);
+  const dealerTotal = calcularTotal(blackjack.dealer);
+
+  document.getElementById("dealerTotal").innerText =
+    "Dealer: " + dealerTotal;
+
+  if(dealerTotal > 21 || playerTotal > dealerTotal){
+    const premio = blackjack.aposta * 2;
+    player.dinheiro += premio;
+    log("🏆 Você venceu! +$"+premio);
+  }
+  else if(playerTotal === dealerTotal){
+    player.dinheiro += blackjack.aposta;
+    log("🤝 Empate. Aposta devolvida.");
+  }
+  else{
+    log("💀 Dealer venceu.");
+  }
+
+  blackjack.ativo=false;
+  avancarTempo(30);
+  atualizar();
+}
+
 
 /* ===== INIT ===== */
 

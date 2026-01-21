@@ -314,6 +314,270 @@ section button:hover{background:#3e2a1c;}
   text-align:center;
 }
 
+.cassino-display{
+  margin: 10px 1380px 10px 0;
+  padding: 15px;
+  text-align: center;
+  font-size: 32px;
+  background:#120b06;
+  border:2px solid #6b4a33;
+  border-radius:8px;
+  min-height:50px;
+  letter-spacing:6px;
+}
+
+.cassino-rodando{
+  animation: piscar 0.3s infinite;
+}
+
+
+@keyframes piscar{
+  0%{opacity:0.3;}
+  50%{opacity:1;}
+  100%{opacity:0.3;}
+}
+
+.botao-bloqueado{
+  opacity:0.4;
+  pointer-events:none;
+}
+
+
+/* ===== BLACKJACK ===== */
+
+#mesa-blackjack{
+  margin-top:15px;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+
+.mao{
+  display:flex;
+  gap:10px;
+  min-height:120px;
+}
+
+.carta{
+  width:80px;
+  height:120px;
+  background:#f5e6c8;
+  border-radius:8px;
+  border:2px solid #2b1d14;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  font-weight:bold;
+  box-shadow:0 6px 12px rgba(0,0,0,.6);
+}
+
+.carta.verso{
+  background:#7a5236;
+  color:transparent;
+}
+
+
+/* ===== CARTAS ===== */
+
+.carta{
+  width:80px;
+  height:120px;
+  background:#f5e6c8;
+  border-radius:8px;
+  border:2px solid #2b1d14;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  font-weight:bold;
+  color:#2b1d14;
+  box-shadow:0 6px 12px rgba(0,0,0,.6);
+
+  opacity:0;
+  transform: translateY(-30px) scale(0.85);
+  animation: entrarCarta .35s ease-out forwards;
+}
+
+.carta.verso{
+  background:#7a5236;
+  color:transparent;
+}
+
+@keyframes entrarCarta{
+  to{
+    opacity:1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.carta.virar{
+  animation: virarCarta .5s ease forwards;
+}
+
+@keyframes virarCarta{
+  0%{ transform: rotateY(0deg); }
+  50%{ transform: rotateY(90deg); }
+  100%{ transform: rotateY(0deg); }
+}
+
+/* ===== DADOS ===== */
+
+#mesa-dados{
+  margin-top:20px;
+  padding:15px;
+  background:#1a120b;
+  border:2px solid #7a5236;
+  border-radius:12px;
+  width:fit-content;
+}
+
+.dados-area{
+  display:flex;
+  gap:20px;
+  margin-bottom:12px;
+}
+
+.dado{
+  width:80px;
+  height:80px;
+  background:#f5e6c8;
+  border-radius:12px;
+  border:3px solid #2b1d14;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:36px;
+  font-weight:bold;
+  color:#2b1d14;
+  box-shadow:0 6px 12px rgba(0,0,0,.6);
+}
+
+/* animação de rolagem */
+.dado.rolando{
+  animation: rolarDado .8s ease-in-out;
+}
+
+@keyframes rolarDado{
+  0%{
+    transform: translate(0,0) rotate(0deg);
+  }
+  20%{
+    transform: translate(-8px,-10px) rotate(90deg);
+  }
+  40%{
+    transform: translate(10px,6px) rotate(180deg);
+  }
+  60%{
+    transform: translate(-6px,4px) rotate(270deg);
+  }
+  80%{
+    transform: translate(4px,-6px) rotate(360deg);
+  }
+  100%{
+    transform: translate(0,0) rotate(360deg);
+  }
+}
+
+.dados-opcoes{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+.dados-opcoes button{
+  flex:1;
+  padding:8px;
+  background:#2f1f14;
+  border:1px solid #6b4a33;
+  color:#f0d9a6;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.dados-opcoes button:hover{
+  background:#3e2a1c;
+}
+
+/* mesa do blackjack */
+#mesa-blackjack{
+  margin: 10px 1070px 10px 0;
+  background: radial-gradient(circle at center, #1f6b3a, #0f3d22);
+  padding:20px;
+  border-radius:16px;
+  box-shadow: inset 0 0 30px rgba(0,0,0,.6),
+              0 10px 25px rgba(0,0,0,.6);
+}
+
+/* área das mãos */
+#mesa-blackjack > div{
+  background: rgba(0,0,0,.25);
+  padding:10px;
+  border-radius:12px;
+}
+
+/* cartas */
+#playerHand,
+#dealerHand{
+  display:flex;
+  gap:10px;
+  min-height:140px;
+}
+
+.carta{
+  position: relative;
+  width:80px;
+  height:120px;
+  perspective:1000px;
+}
+
+.carta-inner{
+  width:100%;
+  height:100%;
+  transition: transform .6s;
+  transform-style: preserve-3d;
+}
+
+.carta.aberta .carta-inner{
+  transform: rotateY(180deg);
+}
+
+.carta-face{
+  position:absolute;
+  width:100%;
+  height:100%;
+  backface-visibility:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+  font-size:22px;
+  font-weight:bold;
+}
+
+.carta-frente{
+  background:#f5e6c8;
+  color:#2b1d14;
+  transform: rotateY(180deg);
+}
+
+.carta-verso{
+  background:repeating-linear-gradient(
+    45deg,
+    #7a5236,
+    #7a5236 10px,
+    #5a3a25 10px,
+    #5a3a25 20px
+  );
+}
+
+
+
+
+
+
+
+
 
 
 /* ===== FOOTER ===== */

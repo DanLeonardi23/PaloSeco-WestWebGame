@@ -33,7 +33,7 @@
       Uma cidade esquecida pelo tempo.<br><br>
       Aqui, o ouro já acabou, a lei é fraca
       e cada escolha cobra seu preço.<br><br>
-      Sobreviva, trabalhe, trapaceie —
+      Sobreviva, trabalhe, trapaceie
       ou morra tentando.
     </p>
 
@@ -149,13 +149,58 @@
   </section>
 
   <section id="cassino">
-  <input 
-    type="number" 
-    id="apostaValor" 
-    placeholder="Valor da aposta"
-    min="1"/>
-  <button onclick="apostarCassino()">Apostar (Dobro ou Nada)</button>
+  <input id="apostaValor" type="number" placeholder="Valor da aposta">
+
+  
+  
+  <div id="cassinoDisplay" class="cassino-display">
+  🍒🍒🍒
+</div>
+  <button onclick="cacaNiquel()">🎰 Caça-níquel</button>
+
+  
+  <div id="mesa-dados">
+    <button onclick="jogarDados()">🎲 Jogar Dados</button>
+    <div class="dados-opcoes">
+  <button onclick="apostarParImpar('par')">➗ Par</button>
+  <button onclick="apostarParImpar('impar')">➖ Ímpar</button>
+</div>
+
+  <div class="dados-area">
+    <div class="dado" id="dado1">?</div>
+    <div class="dado" id="dado2">?</div>
+  </div>
+
+</div>
+
+
+  <button onclick="iniciarBlackjack()">🃏 Blackjack</button>
+ <div id="blackjack">
+  <h2>🃏 Blackjack</h2>
+
+  <div id="mesa-blackjack">
+    <div>
+      <strong>Dealer</strong>
+      <div id="dealerHand" class="mao"></div>
+      <div id="dealerTotal"></div>
+    </div>
+
+    <div>
+      <strong>Você</strong>
+      <div id="playerHand" class="mao"></div>
+      <div id="playerTotal"></div>
+    </div>
+  </div>
+
+  <button onclick="iniciarBlackjack()">🎲 Iniciar</button>
+  <button onclick="pedirCarta()">➕ Pedir carta</button>
+  <button onclick="pararBlackjack()">✋ Parar</button>
+</div>
+
+</div>
+
 </section>
+
 
 
 
