@@ -85,6 +85,10 @@
       
       <div>Bebedeira: <span id="bebedeira"></span>%</div>
       <div class="bar"><div id="barBebedeira" class="fill drunk"></div></div>
+
+      <div>Vício: <span id="vicio"></span>%</div>
+      <div class="bar"><div id="barVicio" class="fill vice"></div></div>
+
       
       <div>Status: <span id="statusTxt"></span></div>
       <div>💰 $<span id="dinheiro"></span></div>
@@ -112,7 +116,7 @@
       <button onclick="abrir('loja')">🏬 Loja</button>
       <button onclick="abrir('farmacia')">🏥 Farmácia</button>
       <button onclick="abrir('cassino')">🎰 Cassino</button>
-
+      <button onclick="abrir('mina')">⛏️ Mina</button>
     </header>
     
     <section id="trabalhos" class="active">
@@ -201,9 +205,23 @@
 
 </section>
 
+<section id="mina">
 
+  <div id="localidade-mina" class="localidade">
+  <h2>⛏️ Mina de Ouro</h2>
 
+  <p id="minaStatus"></p>
 
+  <button id="btnComprarMina">
+    Comprar Mina ($1000)
+  </button>
+
+  <button id="btnTrabalharMina" style="display:none">
+    Trabalhar na Mina
+  </button>
+</div>
+
+</section>
 
   <div id="log"></div>
 

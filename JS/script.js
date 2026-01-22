@@ -17,7 +17,15 @@ let player={
   vida: 5,
   morto:false,
   diasVivos: 1
+
 };
+player.minaOuro = {
+  comprada: false
+};
+
+player.vicio = 0; // 0 a 100
+
+
 
 
 
@@ -237,9 +245,12 @@ function atualizar(){
   bancoValor.textContent=player.banco;
   statusTxt.textContent=player.status;
 
+  
   titulo.textContent = obterTitulo();
   nivel.textContent = player.nivel;
-
+  
+  vicio.textContent = player.vicio;
+  barVicio.style.width = player.vicio + "%";
 
   barEnergia.style.width=player.energia+"%";
   barBebedeira.style.width=player.bebedeira+"%";
@@ -310,6 +321,7 @@ function podeAgir(c=0){
 
 function trabalharestabulos(){
   if(!podeAgir(5)) return;
+  if(falhaPorVicio()) return;
 
   player.energia -= 5;
   if(falhaPorBebedeira()){
@@ -324,6 +336,7 @@ function trabalharestabulos(){
 
 function roubar(){
   if(!podeAgir(10)) return;
+  if(falhaPorVicio()) return;
   player.energia -= 10;
   let chancePrisao = 0.4;
   // Bebedeira alta aumenta risco
@@ -346,6 +359,7 @@ function roubar(){
 
 function assaltardiligencia(){
   if(!podeAgir(20)) return;
+  if(falhaPorVicio()) return;
   player.energia -= 20;
   let chancePrisao = 0.7;
   if(player.bebedeira > 50) chancePrisao += 0.2;
@@ -362,6 +376,7 @@ function assaltardiligencia(){
 
 
 function assaltartrem(){
+  if(falhaPorVicio()) return;
   if(!podeAgir(30)) return;
   player.energia -= 30;
   let chancePrisao = 0.9;
@@ -435,6 +450,8 @@ function cacaNiquel(){
   }
 
   player.dinheiro -= aposta;
+  
+
   atualizar();
 
   bloquearCassino(true);
@@ -464,11 +481,14 @@ function cacaNiquel(){
     if(r1 === r2 && r2 === r3){
       const premio = aposta * 5;
       player.dinheiro += premio;
+      player.vicio = Math.min(100, player.vicio + 10);
+
       log("💰 JACKPOT! Você ganhou $" + premio);
     }
     else if(r1 === r2 || r2 === r3 || r1 === r3){
       const premio = aposta * 2;
       player.dinheiro += premio;
+      player.vicio = Math.min(100, player.vicio + 5);
       log("✨ Boa! Retorno de $" + premio);
     }
     else{
@@ -499,6 +519,7 @@ function apostarParImpar(escolha){
   }
 
   player.dinheiro -= aposta;
+
   atualizar();
 
   const d1 = document.getElementById("dado1");
@@ -534,6 +555,8 @@ function apostarParImpar(escolha){
     }
 
     avancarTempo(15);
+    player.vicio = Math.min(100, player.vicio + 4);
+
     atualizar();
 
   }, 900);
@@ -605,6 +628,8 @@ function bjTotal(mao){
 
 function bjIniciar(){
   if(!podeAgir()) return;
+  player.vicio = Math.min(100, player.vicio + 6);
+
 
   const aposta = parseInt(document.getElementById("apostaValor").value);
   if(isNaN(aposta) || aposta <= 0){
@@ -700,6 +725,22 @@ function bjParar(){
   atualizar();
 }
 
+
+function falhaPorVicio(){
+  if(player.vicio < 20) return false;
+
+  // chance cresce com o vício
+  // 20% = 5% chance
+  // 100% = 60% chance
+  const chance = ((player.vicio - 20) / 80) * 0.6;
+
+  if(Math.random() < chance){
+    log("🎰 Sua mente só consegue pensar em apostas.");
+    return true;
+  }
+
+  return false;
+}
 
 
 
@@ -890,6 +931,26 @@ setInterval(()=>{
     player.bebedeira = Math.max(0, player.bebedeira - 1);
   }
 },5000);
+
+setInterval(()=>{
+  if(player.morto) return;
+
+  if(player.status === "Livre"){
+    player.energia = Math.min(100, player.energia + 1);
+    player.bebedeira = Math.max(0, player.bebedeira - 1);
+
+    // vício quase não diminui
+    if(player.vicio > 0 && Math.random() < 0.5){
+      player.vicio--;
+    }
+  }
+},5000);
+
+if(player.vicio > 70 && Math.random() < 0.1){
+  log("🧠 O som do caça níquel rodando ecoa na sua cabeça.");
+}
+
+
 
 if (player.preso) {
   avancarTempo(1);
@@ -1114,6 +1175,70 @@ setTimeout(()=>{
   avancarTempo(30);
   atualizar();
 }
+
+function atualizarMina(){
+  const status = document.getElementById("minaStatus");
+  const btnComprar = document.getElementById("btnComprarMina");
+  const btnTrabalhar = document.getElementById("btnTrabalharMina");
+
+  if(!player.minaOuro.comprada){
+    status.innerText =
+      "Uma mina abandonada. Parece promissora, mas exige investimento.";
+    btnComprar.style.display = "inline-block";
+    btnTrabalhar.style.display = "none";
+  }else{
+    status.innerText =
+      "A mina é sua. O trabalho é pesado e o retorno incerto.";
+    btnComprar.style.display = "none";
+    btnTrabalhar.style.display = "inline-block";
+  }
+}
+
+atualizarMina();
+
+
+document.getElementById("btnComprarMina").onclick = () => {
+
+  if(player.dinheiro < 1000){
+    log("💸 Você não tem $1000 para comprar a mina.");
+    return;
+  }
+
+  player.dinheiro -= 1000;
+  player.minaOuro.comprada = true;
+
+  log("⛏️ Você comprou a Mina de Ouro.");
+  atualizarMina();
+  atualizar();
+};
+
+document.getElementById("btnTrabalharMina").onclick = () => {
+
+  if(!player.minaOuro.comprada) return;
+
+  if(player.energia < 40){
+    log("😓 Você está exausto demais para trabalhar na mina.");
+    return;
+  }
+
+  player.energia -= 40;
+  avancarTempo(180);
+
+  const sorte = Math.random();
+
+  if(sorte < 0.12){ // 12% de chance
+    const ouro = Math.floor(500 + Math.random() * 500);
+    player.dinheiro += ouro;
+    log(`✨ Você encontrou ouro! +$${ouro}`);
+  }else{
+    log("⛏️ Muito esforço… nenhum ouro hoje.");
+  }
+
+  atualizar();
+};
+
+
+
 
 
 /* ===== INIT ===== */
