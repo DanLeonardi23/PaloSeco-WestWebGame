@@ -19,9 +19,11 @@ let player={
   diasVivos: 1,
   minaOuro: {comprada: false},
   vicio: 0 // 0 a 100
+  correioNovo:false,
 
 };
 
+let correios = [];
 
 
 function iniciarJogo(){
@@ -108,6 +110,9 @@ function avancarTempo(minutos) {
   }
 
   atualizarHUD();
+  // Correios podem chegar a qualquer momento
+tentarEventos(eventosCorreios);
+
 }
 
 /* ===== MINA DE OURO ===== */
@@ -239,19 +244,19 @@ function ganharXP(v){
 const eventosSaloon = [
   {
     nome: "Briga de Saloon",
-    chance: 0.12,
+    chance: 0.010,
     executar(){
       sofrerDano(1);
       player.bebedeira += 10;
       player.energia = Math.max(0, player.energia - 10);
-      log("🥊 Uma briga explode no saloon.");
+      log("🥊 Uma briga explode no saloon e sobra até para você.");
     }
   },
   {
     nome: "Rodada Grátis",
-    chance: 0.08,
+    chance: 0.09,
     executar(){
-      player.bebedeira += 5;
+      player.bebedeira += 10;
       log("🍺 Um bêbado paga uma rodada pra você.");
     }
   }
@@ -320,8 +325,8 @@ const eventosMina = [
     nome: "Desmoronamento",
     chance: 0.05,
     executar(){
-      sofrerDano(1);
-      player.energia = Math.max(0, player.energia - 15);
+      sofrerDano(3);
+      player.energia = Math.max(0, player.energia - 50);
       log("🪨 Um desmoronamento quase te enterra vivo.");
     }
   },
@@ -377,10 +382,29 @@ const eventosXerife = [
   }
 ];
 
-
-
-
-
+const eventosCorreios = [
+  {
+    nome: "Carta Estranha",
+    chance: 0.015, // 1.5% por ação
+    executar(){
+      log("📬 Um mensageiro entrega uma carta lacrada. O selo está quebrado.");
+    }
+  },
+  {
+    nome: "Bilhete Suspeito",
+    chance: 0.01,
+    executar(){
+      log("📬 Um bilhete anônimo promete dinheiro fácil. Parece perigoso.");
+    }
+  },
+  {
+    nome: "Recado do Passado",
+    chance: 0.005,
+    executar(){
+      log("📬 Uma carta antiga menciona eventos que você preferia esquecer.");
+    }
+  }
+];
 
 
 
@@ -393,7 +417,6 @@ function tentarEventos(lista){
     }
   });
 }
-
 
 
 
@@ -1015,6 +1038,8 @@ function subornoPreso(){
   log("💸 Pagou $"+custoFinal+" ao xerife.");
 }
 
+/* ===== AÇÕES SALOON ===== */
+
 function beber(){
   if(estaPreso()) return;
   if(player.dinheiro<15){semDinheiro();return;}
@@ -1061,6 +1086,8 @@ function cafe(){
 
 }
 
+/* ===== AÇÕES FARMÁCIA ===== */
+
 function curarSimples(){
   const custo = 25;
 
@@ -1088,7 +1115,7 @@ function curarSimples(){
 
 }
 
-
+/* ===== AÇÕES BANCO ===== */
 
 function depositar(){
   if(estaPreso()) return;
@@ -1113,6 +1140,7 @@ function sacar(){
   }
 }
 
+/* ===== AÇÕES LOJA ===== */
 
 function comprarEquip(i){
   if(estaPreso()) return;
@@ -1212,6 +1240,8 @@ function resetarJogo(){
 
   logs = [];
 }
+
+/* ===== BLACKJACK COMPLETO ===== */
 
 let blackjack = {
   ativo:false,
@@ -1381,9 +1411,6 @@ setTimeout(()=>{
 },100);
 
 
-
-
-
   const playerTotal = calcularTotal(blackjack.player);
   const dealerTotal = calcularTotal(blackjack.dealer);
 
@@ -1407,6 +1434,94 @@ setTimeout(()=>{
   avancarTempo(30);
   atualizar();
 }
+
+
+/* ===== ENTREGAS CORREIO ===== */
+
+function verificarCorreios(){
+  mensagensPossiveis.forEach(msg=>{
+    if(!correios.includes(msg) && msg.condicao()){
+      correios.push(msg);
+      log("📬 Uma nova carta chegou aos Correios.");
+    }
+  });
+}
+
+function atualizarCorreios(){
+  const lista = document.getElementById("listaCorreios");
+  const vazio = document.getElementById("correiosVazio");
+
+  lista.innerHTML = "";
+
+  if(correios.length === 0){
+    vazio.style.display = "block";
+    return;
+  }
+
+  vazio.style.display = "none";
+
+  correios.forEach((msg, i)=>{
+    const div = document.createElement("div");
+    div.className = "mensagem-correio";
+    if(msg.lida) div.classList.add("mensagem-lida");
+
+    div.innerHTML = `
+      <div class="mensagem-titulo">${msg.titulo}</div>
+      <div class="mensagem-tipo">${msg.tipo}</div>
+    `;
+
+    div.onclick = ()=>{
+      if(!msg.lida){
+        msg.lida = true;
+        log("📖 "+msg.texto);
+        if(msg.aoLer) msg.aoLer();
+        atualizarCorreios();
+      }
+    };
+
+    lista.appendChild(div);
+  });
+}
+
+function atualizarCorreios(){
+  const lista = document.getElementById("listaCorreios");
+  const vazio = document.getElementById("correiosVazio");
+
+  lista.innerHTML = "";
+
+  if(correios.length === 0){
+    vazio.style.display = "block";
+    return;
+  }
+
+  vazio.style.display = "none";
+
+  correios.forEach((msg, i)=>{
+    const div = document.createElement("div");
+    div.className = "mensagem-correio";
+    if(msg.lida) div.classList.add("mensagem-lida");
+
+    div.innerHTML = `
+      <div class="mensagem-titulo">${msg.titulo}</div>
+      <div class="mensagem-tipo">${msg.tipo}</div>
+    `;
+
+    div.onclick = ()=>{
+      if(!msg.lida){
+        msg.lida = true;
+        log("📖 "+msg.texto);
+        if(msg.aoLer) msg.aoLer();
+        atualizarCorreios();
+      }
+    };
+
+    lista.appendChild(div);
+  });
+}
+
+
+
+
 
 
 
