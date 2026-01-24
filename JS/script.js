@@ -151,12 +151,19 @@ document.getElementById("btnTrabalharMina").onclick = () => {
     return;
   }
 
-  if(player.energia < 25){
+    let custoEnergia = 25;
+
+  if(player.equip.bota){
+    custoEnergia = Math.floor(custoEnergia * 0.9);
+  }
+
+  if(player.energia < custoEnergia){
     log("😴 Energia insuficiente para trabalhar na mina.");
     return;
   }
 
-  player.energia -= 25;
+  player.energia -= custoEnergia;
+
   
   const sucesso = Math.random() < 0.1;
   
@@ -168,6 +175,7 @@ document.getElementById("btnTrabalharMina").onclick = () => {
     log("⛏️ Você trabalha duro, mas não encontra nada de valor.");
   }
   
+  tentarEventos(eventosMina);
   avancarTempo(180);
   atualizar();
 };
@@ -200,7 +208,14 @@ function sofrerDano(valor = 1){
 
 /* ===== LEVEL ===== */
 function ganharXP(v){
-  player.xp += v;
+  let xpFinal = v;
+
+  if(player.equip.chapeu){
+    xpFinal = Math.floor(v * 1.05);
+  }
+
+  player.xp += xpFinal;
+
 
   while(player.xp >= player.xpProx){
     player.xp -= player.xpProx;
@@ -219,55 +234,155 @@ function ganharXP(v){
   }
 }
 
-/* ===== EVENTOS GERAIS ===== */
+/* ===== EVENTOS ===== */
 
-const eventosGerais = [
-  {
-    nome: "Viajante Generoso",
-    chance: 0.15,
-    executar(){
-      const ganho = random(5, 20);
-      player.dinheiro += ganho;
-      log("🤠 Um viajante agradecido lhe dá $" + ganho + ".");
-    }
-  },
+const eventosSaloon = [
   {
     nome: "Briga de Saloon",
-    chance: 0.10,
+    chance: 0.12,
     executar(){
-        sofrerDano(1);
-    player.bebedeira += 10;
+      sofrerDano(1);
+      player.bebedeira += 10;
       player.energia = Math.max(0, player.energia - 10);
-      log("🥊 Uma briga estoura perto de você. Sai machucado.");
+      log("🥊 Uma briga explode no saloon.");
     }
   },
   {
-    nome: "Carteira Perdida",
+    nome: "Rodada Grátis",
     chance: 0.08,
     executar(){
-      const ganho = random(10, 30);
-      player.dinheiro += ganho;
-      log("👛 Você encontra uma carteira caída na lama. $" + ganho + ".");
-    }
-  },
-  {
-    nome: "Pregador Maluco",
-    chance: 0.06,
-    executar(){
-      player.bebedeira = Math.max(0, player.bebedeira - 10);
-      log("📖 Um pregador grita sobre o fim dos tempos. Você se sente sóbrio.");
-    }
-  },
-  {
-    nome: "Xerife de Olho",
-    chance: 0.05,
-    executar(){
-    if(player.bebedeira <= 50) return;
-      preso();
-      log("👮 O xerife estava de olho em você...");
+      player.bebedeira += 5;
+      log("🍺 Um bêbado paga uma rodada pra você.");
     }
   }
 ];
+
+const eventosTrabalho = [
+  {
+    nome: "Ferramenta Quebrada",
+    chance: 0.10,
+    executar(){
+      player.energia = Math.max(0, player.energia - 5);
+      log("🔧 Uma ferramenta quebra durante o trabalho.");
+    }
+  },
+  {
+    nome: "Patrão Satisfeito",
+    chance: 0.07,
+    executar(){
+      player.dinheiro += 5;
+      log("🙂 O patrão gostou do serviço. Gorjeta +$5.");
+    }
+  }
+];
+
+const eventosFarmacia = [
+  {
+    nome: "Remédio Vencido",
+    chance: 0.08,
+    executar(){
+      sofrerDano(1);
+      log("💊 Um remédio estava estragado.");
+    }
+  },
+  {
+    nome: "Desconto Médico",
+    chance: 0.05,
+    executar(){
+      player.dinheiro += 10;
+      log("🩺 O médico lhe dá um desconto inesperado.");
+    }
+  }
+];
+
+const eventosCassino = [
+  {
+    nome: "Trapaça Descoberta",
+    chance: 0.06,
+    executar(){
+      preso();
+      log("🎰 O cassino acusa você de trapaça!");
+    }
+  },
+  {
+    nome: "Noite de Sorte",
+    chance: 0.05,
+    executar(){
+      player.dinheiro += 20;
+      log("🍀 A maré virou a seu favor hoje.");
+    }
+  }
+];
+
+
+const eventosMina = [
+  {
+    nome: "Desmoronamento",
+    chance: 0.05,
+    executar(){
+      sofrerDano(1);
+      player.energia = Math.max(0, player.energia - 15);
+      log("🪨 Um desmoronamento quase te enterra vivo.");
+    }
+  },
+  {
+    nome: "Veio Rico",
+    chance: 0.04,
+    executar(){
+      const bonus = random(50,150);
+      player.dinheiro += bonus;
+      log("✨ Um veio inesperado rende +$"+bonus+".");
+    }
+  }
+];
+
+
+const eventosLoja = [
+  {
+    nome: "Vendedor Desonesto",
+    chance: 0.07,
+    executar(){
+      player.dinheiro = Math.max(0, player.dinheiro - 10);
+      log("🛒 O lojista te passa a perna.");
+    }
+  },
+  {
+    nome: "Cliente Generoso",
+    chance: 0.05,
+    executar(){
+      player.dinheiro += 10;
+      log("🪙 Um cliente deixa moedas no balcão.");
+    }
+  }
+];
+
+
+const eventosXerife = [
+  {
+    nome: "Xerife de Olho",
+    chance: 0.08,
+    executar(){
+      if(player.bebedeira > 50){
+        preso();
+        log("👮 O xerife decide agir.");
+      }
+    }
+  },
+  {
+    nome: "Advertência",
+    chance: 0.10,
+    executar(){
+      log("👮 O xerife manda você andar na linha.");
+    }
+  }
+];
+
+
+
+
+
+
+
 
 /* TENTA EVENTOS DA LISTA */
 
@@ -384,25 +499,40 @@ function podeAgir(c=0){
 
 
 function trabalharestabulos(){
-  if(!podeAgir(5)) return;
+    let custoEnergia = 5;
+
+  if(player.equip.bota){
+    custoEnergia = Math.floor(custoEnergia * 0.9);
+  }
+
+  if(!podeAgir(custoEnergia)) return;
   if(falhaPorVicio()) return;
 
-  player.energia -= 5;
+  player.energia -= custoEnergia;
+
   if(falhaPorBebedeira()){
     return;
   }
   player.dinheiro += 5;
   ganharXP(5);
   log("🔨 Trabalhou nos estábulos.");
-  tentarEventos(eventosGerais);
+  tentarEventos(eventosTrabalho);
   avancarTempo(120);
+
 }
 
 function roubar(){
   if(!podeAgir(10)) return;
   if(falhaPorVicio()) return;
   player.energia -= 10;
-  let chancePrisao = 0.4;
+    let chancePrisao = 0.4;
+
+  if(player.equip.arma){
+    chancePrisao -= 0.10;
+  }
+
+  if(player.bebedeira > 50) chancePrisao += 0.2;
+
   // Bebedeira alta aumenta risco
   if(player.bebedeira > 50) chancePrisao += 0.2;
   if(Math.random() < chancePrisao){
@@ -425,7 +555,12 @@ function assaltardiligencia(){
   if(!podeAgir(20)) return;
   if(falhaPorVicio()) return;
   player.energia -= 20;
-  let chancePrisao = 0.7;
+    let chancePrisao = 0.7;
+
+  if(player.equip.arma){
+    chancePrisao -= 0.10;
+  }
+  // Bebedeira alta aumenta risco
   if(player.bebedeira > 50) chancePrisao += 0.2;
   if(Math.random() < chancePrisao){
     preso();
@@ -443,7 +578,12 @@ function assaltartrem(){
   if(falhaPorVicio()) return;
   if(!podeAgir(30)) return;
   player.energia -= 30;
-  let chancePrisao = 0.9;
+    let chancePrisao = 0.9;
+
+  if(player.equip.arma){
+    chancePrisao -= 0.10;
+  }
+  // Bebedeira alta aumenta risco
   if(player.bebedeira > 50) chancePrisao += 0.1;
   if(Math.random() < chancePrisao){
     preso();
@@ -493,7 +633,7 @@ function apostarCassino(){
   }else{
     log("💀 A casa venceu. Você perdeu $" + valor + ".");
   }
-
+  tentarEventos(eventosCassino);
   avancarTempo(30);
   atualizar();
 }
@@ -515,14 +655,14 @@ function cacaNiquel(){
 
   player.dinheiro -= aposta;
   
-
+  
   atualizar();
-
+  
   bloquearCassino(true);
   display.classList.add("cassino-rodando");
-
+  
   const simbolos = ["🍒","🔔","💎","⭐","🍋"];
-
+  
   let tempo = 0;
   const rolar = setInterval(()=>{
     const r1 = simbolos[random(0, simbolos.length-1)];
@@ -531,22 +671,22 @@ function cacaNiquel(){
     display.textContent = `${r1} ${r2} ${r3}`;
     tempo += 200;
   },200);
-
+  
   setTimeout(()=>{
     clearInterval(rolar);
     display.classList.remove("cassino-rodando");
-
+    
     const r1 = simbolos[random(0, simbolos.length-1)];
     const r2 = simbolos[random(0, simbolos.length-1)];
     const r3 = simbolos[random(0, simbolos.length-1)];
-
+    
     display.textContent = `${r1} ${r2} ${r3}`;
-
+    
     if(r1 === r2 && r2 === r3){
       const premio = aposta * 5;
       player.dinheiro += premio;
       player.vicio = Math.min(100, player.vicio + 10);
-
+      
       log("💰 JACKPOT! Você ganhou $" + premio);
     }
     else if(r1 === r2 || r2 === r3 || r1 === r3){
@@ -558,7 +698,8 @@ function cacaNiquel(){
     else{
       log("💀 Nada feito. A casa venceu.");
     }
-
+    
+    tentarEventos(eventosCassino);
     bloquearCassino(false);
     avancarTempo(10);
     atualizar();
@@ -618,9 +759,8 @@ function apostarParImpar(escolha){
       log(`💀 ${v1} + ${v2} = ${soma} (${resultado.toUpperCase()}) — A casa venceu.`);
     }
     player.vicio = Math.min(100, player.vicio + 3);
+    tentarEventos(eventosCassino);
     avancarTempo(15);
-    
-
     atualizar();
 
   }, 900);
@@ -733,6 +873,8 @@ function bjIniciar(){
   setTimeout(()=> bjDarCarta("dealerHand", c2),300);
 
   log("🃏 Blackjack iniciado.");
+  tentarEventos(eventosCassino);
+
   atualizar();
 }
 
@@ -835,11 +977,17 @@ function estaPreso(){
 
 function preso(){
   player.status = "Preso";
+    if(player.equip.arma){
+    player.equip.arma = false;
+    log("🔫 Sua arma foi confiscada pelo xerife.");
+  }
+
   const tempoBase = 30000;
   const tempoFinal = tempoBase * player.nivel;
   player.presoAte = Date.now() + tempoFinal;
   const dinheiroPerdido = player.dinheiro;
   player.dinheiro = 0;
+  tentarEventos(eventosXerife);
   log("🔒 Você foi preso!");
   log("💸 O xerife confisca $" + dinheiroPerdido + ".");
   log("⏳ Pena: " + (tempoFinal/1000) + " segundos (nível "+player.nivel+")");
@@ -862,7 +1010,7 @@ function subornoPreso(){
   player.dinheiro -= custoFinal;
   player.status = "Livre";
   player.presoAte = 0;
-
+  tentarEventos(eventosXerife);
   log("🤝 Suborno aceito.");
   log("💸 Pagou $"+custoFinal+" ao xerife.");
 }
@@ -874,6 +1022,8 @@ function beber(){
   player.energia=Math.min(100,player.energia+10);
   player.bebedeira=Math.min(100,player.bebedeira+15);
   log("🍺 Bebeu cerveja.");
+  tentarEventos(eventosSaloon);
+
 }
 
 function leite(){
@@ -883,6 +1033,8 @@ function leite(){
   player.energia=Math.min(100,player.energia+5);
   player.bebedeira=Math.max(0,player.bebedeira-5);
   log("🥛 Bebeu leite.");
+  tentarEventos(eventosSaloon);
+
 }
 
 function cafe(){
@@ -905,6 +1057,8 @@ function cafe(){
 
   player.bebedeira = Math.max(0, player.bebedeira - reducaoBebedeira);
   player.energia = Math.min(100, player.energia + ganhoEnergia);
+  tentarEventos(eventosSaloon);
+
 }
 
 function curarSimples(){
@@ -930,6 +1084,8 @@ function curarSimples(){
   }else{
     log("🏥 O médico cuida dos seus ferimentos.");
   }
+  tentarEventos(eventosFarmacia);
+
 }
 
 
@@ -966,6 +1122,8 @@ function comprarEquip(i){
   player.dinheiro-=p[i];
   player.equip[i]=true;
   log("🛠️ Comprou "+i+".");
+  tentarEventos(eventosLoja);
+
 }
 
 function modificadorPrisao(){
@@ -1187,6 +1345,8 @@ blackjack.dealer.push(blackjack.baralho.pop()); // carta ABERTA
     "Dealer: ?";
 
   log("🃏 Blackjack iniciado.");
+  tentarEventos(eventosCassino);
+
 }
 
 function pedirCarta(){
