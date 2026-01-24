@@ -6,12 +6,41 @@ body{
   color:#f5e6c8;
   display:flex;
 }
+
+#game-container{
+  display: flex;
+  gap: 10px;
+}
+
+#aside-bando{
+  width: 220px;
+  background: #1b120c;
+  border: 3px solid #5a3e2b;
+  color: #cdb892;
+  padding: 10px;
+}
+
+#aside-bando h3{
+  margin-top: 0;
+  font-size: 14px;
+  text-align: center;
+  border-bottom: 3px solid #5a3e2b;
+  padding-bottom: 4px;
+}
+
+#aside-bando p{
+  font-size: 12px;
+  text-align: center;
+}
+
+
 aside{
   width:240px;
   background:#1a120b;
   padding:10px;
   border-right:3px solid #5a3e2b;
 }
+
 .avatar{
   width:144px;
   height:144px;
@@ -36,10 +65,9 @@ h3{
 }
 
 /* ===== TÍTULO ===== */
-.titulo{
-  text-align: center;
-  margin-bottom:20px;
-  margin-top: 10px;
+#logomain{
+  display:block;
+  margin: 20px auto 010px auto;
 }
 
 .separador{
