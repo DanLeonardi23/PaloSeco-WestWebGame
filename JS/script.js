@@ -24,9 +24,6 @@ let player={
 
 
 
-
-
-
 function iniciarJogo(){
   const input = document.getElementById("nomeJogador");
   const nome = input.value.trim();
@@ -1156,6 +1153,9 @@ function iniciarBlackjack(){
   }
 
   player.dinheiro -= aposta;
+
+  player.vicio = Math.min(100, player.vicio + 10);
+  atualizar();
 
   blackjack = {
     ativo:true,
