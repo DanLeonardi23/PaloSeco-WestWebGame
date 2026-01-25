@@ -641,6 +641,13 @@ section button:hover{background:#3e2a1c;}
   opacity:0.5;
 }
 
+.btn-correio-novo{
+  background:#2e7d32 !important;
+  border-color:#6fbf73 !important;
+  color:#eaffea !important;
+  box-shadow: 0 0 10px rgba(120,255,120,.6);
+}
+
 
 
 

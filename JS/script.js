@@ -18,9 +18,8 @@ let player={
   morto:false,
   diasVivos: 1,
   minaOuro: {comprada: false},
-  vicio: 0 // 0 a 100
-  correioNovo:false,
-
+  vicio: 0, // 0 a 100
+  correioNovo:false
 };
 
 let correios = [];
@@ -109,11 +108,55 @@ function avancarTempo(minutos) {
     log(`🌅 Um novo dia começa — Dia ${tempo.dia}`);
   }
 
-  atualizarHUD();
+  atualizar();
   // Correios podem chegar a qualquer momento
 tentarEventos(eventosCorreios);
 
 }
+
+function atualizarCorreiosUI(){
+  const btn = document.getElementById("btnCorreios");
+  if(!btn) return;
+
+  if(player.correioNovo){
+    btn.classList.add("btn-correio-novo");
+  }else{
+    btn.classList.remove("btn-correio-novo");
+  }
+}
+
+function atualizarCorreios(){
+  const lista = document.getElementById("listaCorreios");
+  const vazio = document.getElementById("correiosVazio");
+
+  lista.innerHTML = "";
+
+  if(correios.length === 0){
+    vazio.style.display = "block";
+    return;
+  }
+
+  vazio.style.display = "none";
+
+  correios.forEach((msg, i)=>{
+    const div = document.createElement("div");
+    div.className = "mensagem-correio" + (msg.lida ? " mensagem-lida" : "");
+
+    div.innerHTML = `
+      <div class="mensagem-titulo">${msg.titulo}</div>
+      <div class="mensagem-tipo">${msg.tipo}</div>
+    `;
+
+    div.onclick = ()=>{
+      msg.lida = true;
+      log("📜 " + msg.texto);
+      atualizarCorreios();
+    };
+
+    lista.appendChild(div);
+  });
+}
+
 
 /* ===== MINA DE OURO ===== */
 
@@ -385,30 +428,55 @@ const eventosXerife = [
 const eventosCorreios = [
   {
     nome: "Carta Estranha",
-    chance: 0.015, // 1.5% por ação
+    chance: 0.05, // 3% de chance
     executar(){
+      adicionarCarta(
+    "Carta Estranha",
+    "Trabalho",
+    "Um mensageiro entrega uma carta lacrada. O selo está quebrado."
+  );
       log("📬 Um mensageiro entrega uma carta lacrada. O selo está quebrado.");
+      player.correioNovo = true;
+      atualizarCorreiosUI();
+
     }
   },
+/*===== CARTAS DE CORREIO =====*/
   {
     nome: "Bilhete Suspeito",
-    chance: 0.01,
+    chance: 0.5,
     executar(){
+      adicionarCarta(
+    "Bilhete Suspeito",
+    "Golpe",
+    "Um bilhete anônimo promete dinheiro fácil. Parece perigoso."
+  );
       log("📬 Um bilhete anônimo promete dinheiro fácil. Parece perigoso.");
+      player.correioNovo = true;
+      atualizarCorreiosUI();
+
     }
   },
   {
     nome: "Recado do Passado",
-    chance: 0.005,
+    chance: 0.03,
     executar(){
+      adicionarCarta(
+    "Recado do Passado",
+    "Lore",
+    "Uma carta antiga menciona eventos que você preferia esquecer."
+  );
       log("📬 Uma carta antiga menciona eventos que você preferia esquecer.");
+      player.correioNovo = true;
+      atualizarCorreiosUI();
+
     }
   }
 ];
 
 
 
-/* TENTA EVENTOS DA LISTA */
+/* ===== TENTA EVENTOS DA LISTA ===== */
 
 function tentarEventos(lista){
   lista.forEach(evento => {
@@ -500,6 +568,13 @@ function abrir(id){
   if(id === "mina"){
     atualizarMina();
   }
+
+  if(id === "correios"){
+  player.correioNovo = false;
+  atualizarCorreiosUI();
+  atualizarCorreios();
+}
+
 }
 
 /* ===== AÇÕES ===== */
@@ -1518,6 +1593,19 @@ function atualizarCorreios(){
     lista.appendChild(div);
   });
 }
+
+function adicionarCarta(titulo, tipo, texto){
+  correios.unshift({
+    titulo,
+    tipo,
+    texto,
+    lida:false
+  });
+
+  player.correioNovo = true;
+  atualizarCorreiosUI();
+}
+
 
 
 
