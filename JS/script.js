@@ -1,3 +1,5 @@
+
+
 /* ===== ESTADO ===== */
 
 
@@ -425,10 +427,13 @@ const eventosXerife = [
   }
 ];
 
+
+/*===== CARTAS DE CORREIO =====*/
+
 const eventosCorreios = [
   {
     nome: "Carta Estranha",
-    chance: 0.05, // 3% de chance
+    chance: 0.005, // 0.5% de chance
     executar(){
       adicionarCarta(
     "Carta Estranha",
@@ -441,10 +446,9 @@ const eventosCorreios = [
 
     }
   },
-/*===== CARTAS DE CORREIO =====*/
   {
     nome: "Bilhete Suspeito",
-    chance: 0.5,
+    chance: 0.005,
     executar(){
       adicionarCarta(
     "Bilhete Suspeito",
@@ -459,7 +463,7 @@ const eventosCorreios = [
   },
   {
     nome: "Recado do Passado",
-    chance: 0.03,
+    chance: 0.005,
     executar(){
       adicionarCarta(
     "Recado do Passado",
