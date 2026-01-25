@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Palo Seco</title>
-
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <title>Palo Seco</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-  <div id="startScreen">
+<!-- ===============================================
+     TELA DE INÍCIO
+     =============================================== -->
+<div id="startScreen">
   <div class="start-box">
     <img src="IMG/logo.png" alt="logo Palo Seco" width="300">
     <p>O Velho Oeste não perdoa.</p>
 
+    <!-- Input para nome do personagem -->
     <input 
       id="nomeJogador" 
       type="text" 
@@ -25,12 +28,13 @@
   </div>
 </div>
 
+<!-- ===============================================
+     TELA DE INTRODUÇÃO
+     =============================================== -->
 <div id="introScreen">
   <div class="start-box">
-
     <img src="IMG/logo.png" alt="logo Palo Seco" width="300">
     
-
     <p>
       Uma cidade esquecida pelo tempo.<br><br>
       Aqui, o ouro já acabou, a lei é fraca
@@ -43,213 +47,276 @@
   </div>
 </div>
 
-
+<!-- ===============================================
+     TELA DE GAME OVER
+     =============================================== -->
 <div id="gameOverScreen">
   <div class="start-box">
     <h1>ACABOU PARA VOCÊ!</h1>
     <p>Você morreu.</p>
-
+    
+    <!-- Mostra quantos dias sobreviveu -->
     <p id="diasFinais"></p>
 
     <button onclick="voltarInicio()">Voltar ao início</button>
   </div>
 </div>
 
-
+<!-- ===============================================
+     ASIDE ESQUERDO - STATUS DO JOGADOR
+     =============================================== -->
 <aside>
+  <!-- Avatar do personagem -->
   <div class="avatar">
     <img id="avatarImg" src="img/avatar.png" width="130">
   </div>
 
+  <!-- Nome do personagem (preenchido via JS) -->
   <h3>⭐Belchior Bill⭐</h3>
 
+  <!-- Título do jogador -->
   <div class="titulo">Título: <span id="titulo"></span></div>
 
+  <!-- Contador de dias -->
   <div id="tempoInfo" class="hud-info">Dia 1</div>
 
+  <!-- Painel de Status -->
   <div class="info-bloco">
-
-    
-    
     <div id="status" class="panel active">
       
-      
+      <!-- Nível -->
       <div>Nível: <span id="nivel"></span></div>
       
+      <!-- Sistema de vida com corações (gerado via JS) -->
       <div id="vida"></div>
-      <!-- corações gerados via JS -->
       
+      <!-- Barra de Experiência -->
       <div>XP: <span id="xp"></span>/<span id="xpProx"></span></div>
       <div class="bar"><div id="barXP" class="fill xp"></div></div>
       
+      <!-- Barra de Energia -->
       <div>Energia: <span id="energia"></span>%</div>
       <div class="bar"><div id="barEnergia" class="fill energy"></div></div>
       
+      <!-- Barra de Bebedeira -->
       <div>Bebedeira: <span id="bebedeira"></span>%</div>
       <div class="bar"><div id="barBebedeira" class="fill drunk"></div></div>
 
+      <!-- Barra de Vício -->
       <div>Vício: <span id="vicio"></span>%</div>
-      <div class="bar"><div id="barVicio" class="fill vice"></div>
-</div>
+      <div class="bar"><div id="barVicio" class="fill vice"></div></div>
 
-      
+      <!-- Status e Dinheiro -->
       <div>Status: <span id="statusTxt"></span></div>
       <div>💰 $<span id="dinheiro"></span></div>
       <div>🏦 $<span id="bancoValor"></span></div>
+      
+      <!-- Timer de prisão (aparece quando preso) -->
       <div id="prisao"></div>
     </div>
 
     <hr class="separador">
   
+    <!-- Equipamentos -->
     <p>🔫 Arma: <span id="eqArma"></span></p>
     <p>🥾 Bota: <span id="eqBota"></span></p>
     <p>🎩 Chapéu: <span id="eqChapeu"></span></p>
   </div>
-    
-  </aside>
+</aside>
+
+<!-- ===============================================
+     MAIN - ÁREA PRINCIPAL DO JOGO
+     =============================================== -->
+<main>
+  <!-- Logo principal -->
+  <img id="logomain" src="IMG/logo.png" alt="logo Palo Seco" width="400">
   
-  <main>
-    <img id="logomain" src="IMG/logo.png" alt="logo Palo Seco" width="400">
-    
-    <header>
-      <button onclick="abrir('trabalhos')">⚒️ Trabalhos</button>
-      <button onclick="abrir('saloon')">🍻 Saloon</button>
-      <button onclick="abrir('banco')">🏦 Banco</button>
-      <button onclick="abrir('xerife')">⭐ Xerife</button>
-      <button onclick="abrir('loja')">🏬 Loja</button>
-      <button onclick="abrir('farmacia')">🏥 Farmácia</button>
-      <button onclick="abrir('cassino')">🎰 Cassino</button>
-      <button onclick="abrir('mina')">⛏️ Mina</button>
-      <button id="btnCorreios" onclick="abrir('correios')">📬 Correios</button>
-    </header>
-    
-    <section id="trabalhos" class="active">
+  <!-- ===============================================
+       HEADER - MENU DE NAVEGAÇÃO
+       =============================================== -->
+  <header>
+    <button onclick="abrir('trabalhos')">⚒️ Trabalhos</button>
+    <button onclick="abrir('saloon')">🍻 Saloon</button>
+    <button onclick="abrir('banco')">🏦 Banco</button>
+    <button onclick="abrir('xerife')">⭐ Xerife</button>
+    <button onclick="abrir('loja')">🏬 Loja</button>
+    <button onclick="abrir('farmacia')">🥼 Farmácia</button>
+    <button onclick="abrir('cassino')">🎰 Cassino</button>
+    <button onclick="abrir('mina')">⛏️ Mina</button>
+    <button id="btnCorreios" onclick="abrir('correios')">📬 Correios</button>
+  </header>
+  
+  <!-- ===============================================
+       SEÇÃO: TRABALHOS
+       =============================================== -->
+  <section id="trabalhos" class="active">
     <button onclick="trabalharestabulos()">🐴 Trabalhar nos estábulos</button>
     <button onclick="roubar()">🚶‍♂️ Roubar andarilho</button>
     <button onclick="assaltardiligencia()">📦 Assaltar diligência</button>
     <button onclick="assaltartrem()">🚂 Assaltar trem</button>
   </section>
 
+  <!-- ===============================================
+       SEÇÃO: SALOON
+       =============================================== -->
   <section id="saloon">
     <button onclick="leite()">🥛 Leite ($5)</button>
     <button onclick="beber()">🍺 Cerveja ($15)</button>
     <button onclick="cafe()">☕ Café preto ($20)</button>
   </section>
 
+  <!-- ===============================================
+       SEÇÃO: BANCO
+       =============================================== -->
   <section id="banco">
     <input id="valorBanco" type="number" placeholder="Valor">
     <button onclick="depositar()">Depositar</button>
     <button onclick="sacar()">Sacar</button>
   </section>
 
+  <!-- ===============================================
+       SEÇÃO: XERIFE
+       =============================================== -->
   <section id="xerife">
+    <!-- Botão de suborno (texto preenchido via JS) -->
     <button id="btnSuborno" onclick="subornoPreso()"></button>
   </section>
 
+  <!-- ===============================================
+       SEÇÃO: LOJA
+       =============================================== -->
   <section id="loja">
     <button onclick="comprarEquip('arma')">🔫 Arma ($50)</button>
     <button onclick="comprarEquip('bota')">👢 Botas ($30)</button>
     <button onclick="comprarEquip('chapeu')">🎩 Chapéu ($20)</button>
   </section>
 
+  <!-- ===============================================
+       SEÇÃO: FARMÁCIA
+       =============================================== -->
   <section id="farmacia">
     <button onclick="curarSimples()">💊 Curativo simples ($25)</button>
   </section>
 
+  <!-- ===============================================
+       SEÇÃO: CASSINO
+       =============================================== -->
   <section id="cassino">
-  <input id="apostaValor" type="number" placeholder="Valor da aposta">
+    <!-- Input de aposta (usado por todos os jogos) -->
+    <input id="apostaValor" type="number" placeholder="Valor da aposta">
 
-  <div id="cassinoDisplay" class="cassino-display">
-  🍒🍒🍒
-</div>
-  <button onclick="cacaNiquel()">🎰 Caça-níquel</button>
+    <!-- Caça-Níquel -->
+    <div id="cassinoDisplay" class="cassino-display">
+      💎💎💎
+    </div>
+    <button onclick="cacaNiquel()">🎰 Caça-níquel</button>
 
-  
-  <div id="mesa-dados">
-    <button onclick="jogarDados()">🎲 Jogar Dados</button>
-    <div class="dados-opcoes">
-  <button onclick="apostarParImpar('par')">➗ Par</button>
-  <button onclick="apostarParImpar('impar')">➖ Ímpar</button>
-</div>
+    <!-- Jogo de Dados -->
+    <div id="mesa-dados">
+      <button onclick="jogarDados()">🎲 Jogar Dados</button>
+      
+      <div class="dados-opcoes">
+        <button onclick="apostarParImpar('par')">➗ Par</button>
+        <button onclick="apostarParImpar('impar')">➖ Ímpar</button>
+      </div>
 
-  <div class="dados-area">
-    <div class="dado" id="dado1">?</div>
-    <div class="dado" id="dado2">?</div>
-  </div>
-
-</div>
-
-
-  <button onclick="iniciarBlackjack()">🃏 Blackjack</button>
- <div id="blackjack">
-  <h2>🃏 Blackjack</h2>
-
-  <div id="mesa-blackjack">
-    <div>
-      <strong>Dealer</strong>
-      <div id="dealerHand" class="mao"></div>
-      <div id="dealerTotal"></div>
+      <div class="dados-area">
+        <div class="dado" id="dado1">?</div>
+        <div class="dado" id="dado2">?</div>
+      </div>
     </div>
 
-    <div>
-      <strong>Você</strong>
-      <div id="playerHand" class="mao"></div>
-      <div id="playerTotal"></div>
+    <!-- Blackjack -->
+    <button onclick="iniciarBlackjack()">🃏 Blackjack</button>
+    
+    <div id="blackjack">
+      <h2>🃏 Blackjack</h2>
+
+      <div id="mesa-blackjack">
+        <!-- Mão do Dealer -->
+        <div>
+          <strong>Dealer</strong>
+          <div id="dealerHand" class="mao"></div>
+          <div id="dealerTotal"></div>
+        </div>
+
+        <!-- Mão do Jogador -->
+        <div>
+          <strong>Você</strong>
+          <div id="playerHand" class="mao"></div>
+          <div id="playerTotal"></div>
+        </div>
+      </div>
+
+      <!-- Controles do Blackjack -->
+      <button onclick="iniciarBlackjack()">🎲 Iniciar</button>
+      <button onclick="pedirCarta()">➕ Pedir carta</button>
+      <button onclick="pararBlackjack()">✋ Parar</button>
     </div>
-  </div>
+  </section>
 
-  <button onclick="iniciarBlackjack()">🎲 Iniciar</button>
-  <button onclick="pedirCarta()">➕ Pedir carta</button>
-  <button onclick="pararBlackjack()">✋ Parar</button>
-</div>
+  <!-- ===============================================
+       SEÇÃO: MINA DE OURO
+       =============================================== -->
+  <section id="mina">
+    <div id="localidade-mina" class="localidade">
+      <h2>⛏️ Mina de Ouro</h2>
 
-</div>
+      <!-- Status da mina (atualizado via JS) -->
+      <p id="minaStatus"></p>
 
-</section>
+      <!-- Botão de compra -->
+      <button id="btnComprarMina">
+        Comprar Mina ($1000)
+      </button>
 
-<section id="mina">
+      <!-- Botão de trabalho (aparece após compra) -->
+      <button id="btnTrabalharMina" style="display:none">
+        Trabalhar na Mina
+      </button>
+    </div>
+  </section>
 
-  <div id="localidade-mina" class="localidade">
-  <h2>⛏️ Mina de Ouro</h2>
+  <!-- ===============================================
+       SEÇÃO: CORREIOS
+       =============================================== -->
+  <section id="correios" class="panel">
+    <h2>📬 Correios</h2>
 
-  <p id="minaStatus"></p>
+    <!-- Lista de cartas (preenchida via JS) -->
+    <div id="listaCorreios" class="lista-correios"></div>
 
-  <button id="btnComprarMina">
-    Comprar Mina ($1000)
-  </button>
+    <!-- Mensagem quando não há cartas -->
+    <p id="correiosVazio" class="texto-fraco">
+      Nenhuma mensagem no momento.
+    </p>
+  </section>
 
-  <button id="btnTrabalharMina" style="display:none">
-    Trabalhar na Mina
-  </button>
-</div>
-
-</section>
-
-<section id="correios" class="panel">
-  <h2>📬 Correios</h2>
-
-  <div id="listaCorreios" class="lista-correios"></div>
-
-  <p id="correiosVazio" class="texto-fraco">
-    Nenhuma mensagem no momento.
-  </p>
-</section>
-
-
+  <!-- ===============================================
+       LOG DE EVENTOS
+       =============================================== -->
   <div id="log"></div>
 
+  <!-- ===============================================
+       FOOTER
+       =============================================== -->
   <footer>
     © 2026 Palo Seco - Jogo de gerenciamento Velho Oeste em desenvolvimento por Dan Leonardi
   </footer>
 </main>
 
+<!-- ===============================================
+     ASIDE DIREITO - ÁREA FUTURA DO BANDO
+     =============================================== -->
 <aside id="aside-bando">
   <h3>📌 Em breve, bando</h3>
   <p>Este espaço será usado pelo bando futuramente.</p>
 </aside>
 
-
+<!-- ===============================================
+     SCRIPT
+     =============================================== -->
 <script src="JS/script.js"></script>
+
 </body>
 </html>
-
