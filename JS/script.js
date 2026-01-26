@@ -924,6 +924,8 @@ function cafe(){
   player.energia = Math.min(100, player.energia + ganhoEnergia);
   tentarEventos(eventosSaloon);
 
+  atualizar();
+
 }
 
 /* ===============================================
