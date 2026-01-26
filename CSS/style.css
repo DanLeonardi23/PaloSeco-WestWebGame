@@ -14,6 +14,43 @@ body {
   display: flex;
 }
 
+/* Animação de shake quando toma dano */
+body.shake {
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-10px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(10px);
+  }
+}
+
+/* Flash vermelho ao tomar dano */
+body.shake::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(139, 0, 0, 0.3);
+  pointer-events: none;
+  animation: flash 0.5s;
+  z-index: 10000;
+}
+
+@keyframes flash {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 /* Container principal do jogo */
 #game-container {
   display: flex;

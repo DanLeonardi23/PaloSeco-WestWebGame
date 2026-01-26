@@ -23,7 +23,7 @@ let player = {
   xpProx: 20,
   energia: 100,
   bebedeira: 0,
-  dinheiro: 5,
+  dinheiro: 1000,
   banco: 0,
   status: "Livre",
   presoAte: 0,
@@ -187,6 +187,10 @@ function sofrerDano(valor = 1) {
   
   player.vida = Math.max(0, player.vida - valor);
   atualizarVida();
+
+  // Efeito visual de shake
+  document.body.classList.add('shake');
+  setTimeout(() => document.body.classList.remove('shake'), 500);
   
   if (player.vida <= 0) {
     player.morto = true;
@@ -335,7 +339,7 @@ function atualizar() {
 const eventosSaloon = [
   {
     nome: "Briga de Saloon",
-    chance: 0.010,
+    chance: 0.10, // 10% de chance
     executar() {
       sofrerDano(1);
       player.bebedeira += 10;
@@ -345,7 +349,7 @@ const eventosSaloon = [
   },
   {
     nome: "Rodada Grátis",
-    chance: 0.09,
+    chance: 0.09, // 9% de chance
     executar() {
       player.bebedeira += 10;
       log("🍺 Um bêbado paga uma rodada pra você.");
@@ -357,7 +361,7 @@ const eventosSaloon = [
 const eventosTrabalho = [
   {
     nome: "Ferramenta Quebrada",
-    chance: 0.10,
+    chance: 0.10, // 10% de chance
     executar() {
       player.energia = Math.max(0, player.energia - 5);
       log("🔧 Uma ferramenta quebra durante o trabalho.");
@@ -888,7 +892,7 @@ function beber(){
   player.bebedeira=Math.min(100,player.bebedeira+15);
   log("🍺 Bebeu cerveja.");
   tentarEventos(eventosSaloon);
-
+  atualizar();
 }
 // Bebe leite
 function leite(){
@@ -899,7 +903,7 @@ function leite(){
   player.bebedeira=Math.max(0,player.bebedeira-0);
   log("🥛 Bebeu leite.");
   tentarEventos(eventosSaloon);
-
+  atualizar();
 }
 // Bebe café
 function cafe(){
