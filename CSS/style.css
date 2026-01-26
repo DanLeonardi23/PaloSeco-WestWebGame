@@ -233,8 +233,9 @@ section button {
   border: 1px solid #6b4a33;
   color: #f0d9a6;
   padding: 6px 10px;
-  margin: 4px 0;
+  margin: 20px 0;
   cursor: pointer;
+  padding: 6px 10px;
 }
 
 section button:hover {
@@ -438,7 +439,7 @@ footer {
 
 /* Display dos símbolos */
 .cassino-display {
-  margin: auto;
+  width: 20%;
   padding: 15px;
   text-align: center;
   font-size: 32px;
@@ -559,7 +560,7 @@ footer {
 
 /* Mesa de blackjack */
 #mesa-blackjack {
-  margin: auto;
+  width: 40%;
   background: radial-gradient(circle at center, #1f6b3a, #0f3d22);
   padding: 20px;
   border-radius: 16px;
@@ -584,6 +585,7 @@ footer {
   display: flex;
   gap: 10px;
   min-height: 140px;
+  padding: 10px;
 }
 
 .mao {
