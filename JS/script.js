@@ -1,5 +1,5 @@
 /* ===============================================
-   PALO SECO - JOGO VELHO OESTE
+   PALO SECO - JOGO DE GESTÃO DO VELHO OESTE
    =============================================== */
 
 /* ===============================================
@@ -23,7 +23,7 @@ let player = {
   xpProx: 20,
   energia: 100,
   bebedeira: 0,
-  dinheiro: 1000,
+  dinheiro: 5,
   banco: 0,
   status: "Livre",
   presoAte: 0,
@@ -421,7 +421,7 @@ const eventosMina = [
     executar() {
       sofrerDano(3);
       player.energia = Math.max(0, player.energia - 50);
-      log("🪨 Um desmoronamento quase te enterra vivo.");
+      log("💥 Um desmoronamento quase te enterra vivo.");
     }
   },
   {
@@ -450,7 +450,7 @@ const eventosLoja = [
     chance: 0.05,
     executar() {
       player.dinheiro += 10;
-      log("🪙 Um cliente deixa moedas no balcão.");
+      log("👛 Um cliente deixa moedas no balcão.");
     }
   }
 ];
@@ -463,7 +463,7 @@ const eventosXerife = [
     executar() {
       if (player.bebedeira > 50) {
         preso();
-        log("👮 O xerife decide agir.");
+        log("⭐ O xerife decide agir.");
       }
     }
   },
@@ -471,7 +471,7 @@ const eventosXerife = [
     nome: "Advertência",
     chance: 0.10,
     executar() {
-      log("👮 O xerife manda você andar na linha.");
+      log("⭐ O xerife manda você andar na linha.");
     }
   }
 ];
@@ -816,7 +816,7 @@ function roubar() {
   const ganho = random(3, 15);
   player.dinheiro += ganho;
   ganharXP(10);
-  log("🕵️ Roubou um andarilho e conseguiu $" + ganho + ".");
+  log("🕺 Roubou um andarilho e conseguiu $" + ganho + ".");
   
   avancarTempo(30);
 }
@@ -844,7 +844,7 @@ function assaltardiligencia() {
   const ganho = random(60, 100);
   player.dinheiro += ganho;
   ganharXP(20);
-  log("🚚 Diligência assaltada! Lucro: $" + ganho + ".");
+  log("📦 Diligência assaltada! Lucro: $" + ganho + ".");
   avancarTempo(60);
 }
 
@@ -1012,7 +1012,7 @@ function comprarEquip(i) {
   
   player.dinheiro -= p[i];
   player.equip[i] = true;
-  log("🛠️ Comprou " + i + ".");
+  log("💸 Comprou " + i + ".");
   tentarEventos(eventosLoja);
 }
 
