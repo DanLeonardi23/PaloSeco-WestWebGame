@@ -289,9 +289,9 @@ function atualizar() {
   barBebedeira.style.width = player.bebedeira + "%";
   barXP.style.width = (player.xp / player.xpProx * 100) + "%";
   
-  eqArma.textContent = player.equip.arma ? "Equipada" : "Nenhuma";
-  eqBota.textContent = player.equip.bota ? "Equipada" : "Nenhuma";
-  eqChapeu.textContent = player.equip.chapeu ? "Equipado" : "Nenhum";
+  eqArma.textContent = player.equip.arma ? "Equipada = -10% Prisão" : "Nenhuma";
+  eqBota.textContent = player.equip.bota ? "Equipada = -5% Energia" : "Nenhuma";
+  eqChapeu.textContent = player.equip.chapeu ? "Equipado = 2x -Vício" : "Nenhum";
   
   // Atualiza timer de prisão
   if (player.status === "Preso") {
@@ -643,7 +643,7 @@ document.getElementById("btnTrabalharMina").onclick = () => {
   let custoEnergia = 25;
   
   if (player.equip.bota) {
-    custoEnergia = Math.floor(custoEnergia * 0.9);
+    custoEnergia = Math.floor(custoEnergia * 0.95); // 5% de redução
   }
   
   if (player.energia < custoEnergia) {
@@ -778,7 +778,7 @@ function trabalharestabulos() {
   let custoEnergia = 5;
   
   if (player.equip.bota) {
-    custoEnergia = Math.floor(custoEnergia * 0.9);
+    custoEnergia = Math.floor(custoEnergia * 0.95);
   }
   
   if (!podeAgir(custoEnergia)) return;
@@ -816,6 +816,18 @@ function roubar() {
     preso();
     return;
   }
+
+   const chancePerderEquip = 0.15; // 15% de chance
+  
+  if (Math.random() < chancePerderEquip) {
+    if (player.equip.bota) {
+      player.equip.bota = false;
+      log("👢 Suas botas foram roubadas durante a fuga!");
+    } else if (player.equip.chapeu) {
+      player.equip.chapeu = false;
+      log("🎩 Seu chapéu caiu durante a correria!");
+    }
+  }
   
   const ganho = random(3, 15);
   player.dinheiro += ganho;
@@ -826,6 +838,7 @@ function roubar() {
 }
 
 // Assalta diligência
+// Assalta diligência
 function assaltardiligencia() {
   if (!podeAgir(20)) return;
   if (falhaPorVicio()) return;
@@ -834,6 +847,7 @@ function assaltardiligencia() {
   
   let chancePrisao = 0.7;
   
+  // Arma reduz 10% da chance 
   if (player.equip.arma) {
     chancePrisao -= 0.10;
   }
@@ -845,11 +859,25 @@ function assaltardiligencia() {
     return;
   }
   
+  // Chance de perder equipamentos
+  const chancePerderEquip = 0.20; // 20% de chance
+  
+  if (Math.random() < chancePerderEquip) {
+    if (player.equip.bota) {
+      player.equip.bota = false;
+      log("👢 Suas botas foram arrancadas na confusão!");
+    } else if (player.equip.chapeu) {
+      player.equip.chapeu = false;
+      log("🎩 Seu chapéu voou com o vento!");
+    }
+  }
+  
   const ganho = random(60, 100);
   player.dinheiro += ganho;
   ganharXP(20);
-  log("📦 Diligência assaltada! Lucro: $" + ganho + ".");
+  log("🚚 Diligência assaltada! Lucro: $" + ganho + ".");
   avancarTempo(60);
+  atualizar();
 }
 
 // Assalta trem
@@ -861,6 +889,7 @@ function assaltartrem() {
   
   let chancePrisao = 0.9;
   
+  // Arma reduz 10% da chance
   if (player.equip.arma) {
     chancePrisao -= 0.10;
   }
@@ -872,11 +901,25 @@ function assaltartrem() {
     return;
   }
   
+  //  Chance de perder equipamentos
+  const chancePerderEquip = 0.25; // 25% de chance
+  
+  if (Math.random() < chancePerderEquip) {
+    if (player.equip.bota) {
+      player.equip.bota = false;
+      log("👢 Suas botas foram destruídas na explosão!");
+    } else if (player.equip.chapeu) {
+      player.equip.chapeu = false;
+      log("🎩 Seu chapéu pegou fogo!");
+    }
+  }
+  
   const ganho = random(100, 250);
   player.dinheiro += ganho;
   ganharXP(40);
   log("🚂 Trem assaltado! Botim: $" + ganho + "!");
   avancarTempo(120);
+  atualizar();
 }
 
 /* ===============================================
@@ -897,8 +940,8 @@ function beber(){
 // Bebe leite
 function leite(){
   if(estaPreso()) return;
-  if(player.dinheiro<5){semDinheiro();return;}
-  player.dinheiro-=5;
+  if(player.dinheiro<3){semDinheiro();return;}
+  player.dinheiro-=3;
   player.energia=Math.min(100,player.energia+5);
   player.bebedeira=Math.max(0,player.bebedeira-0);
   log("🥛 Bebeu leite.");
@@ -1346,9 +1389,17 @@ setInterval(() => {
     player.energia = Math.min(100, player.energia + 1);
     player.bebedeira = Math.max(0, player.bebedeira - 1);
     
-    // Vício quase não diminui
-    if (player.vicio > 0 && Math.random() < 0.5) {
-      player.vicio--;
+    // ATUALIZADO: Chapéu reduz vício 2x mais rápido
+    if (player.vicio > 0) {
+      if (player.equip.chapeu) {
+        // Com chapéu: reduz 1 ponto sempre (100% de chance)
+        player.vicio = Math.max(0, player.vicio - 1);
+      } else {
+        // Sem chapéu: reduz 1 ponto 50% das vezes
+        if (Math.random() < 0.5) {
+          player.vicio = Math.max(0, player.vicio - 1);
+        }
+      }
     }
   }
 }, 5000);
