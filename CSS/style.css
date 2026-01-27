@@ -800,3 +800,129 @@ footer {
   color: #eaffea !important;
   box-shadow: 0 0 10px rgba(120, 255, 120, .6);
 }
+
+/* ===============================================
+   21. POPUP DE CORREIO
+   =============================================== */
+
+#popupCorreio {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9997;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.popup-correio-box {
+  background: #1a120b;
+  border: 3px solid #7a5236;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  animation: slideDown 0.4s;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.popup-header {
+  margin-bottom: 20px;
+  border-bottom: 2px solid #5a3e2b;
+  padding-bottom: 15px;
+}
+
+.popup-header h2 {
+  margin: 0 0 8px 0;
+  color: #f0d9a6;
+  font-size: 24px;
+}
+
+.popup-tipo {
+  display: inline-block;
+  background: #2f1f14;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #cdb892;
+  border: 1px solid #6b4a33;
+}
+
+.popup-conteudo {
+  margin: 20px 0;
+  line-height: 1.8;
+  font-size: 15px;
+  color: #f5e6c8;
+  min-height: 100px;
+}
+
+.popup-conteudo p {
+  margin: 0;
+}
+
+.popup-escolhas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.popup-escolha-btn {
+  background: #2f1f14;
+  border: 2px solid #6b4a33;
+  color: #f0d9a6;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s;
+  text-align: left;
+}
+
+.popup-escolha-btn:hover {
+  background: #3e2a1c;
+  border-color: #7a5236;
+  transform: translateX(5px);
+}
+
+.popup-escolha-btn:active {
+  transform: scale(0.98);
+}
+
+.popup-fechar {
+  width: 100%;
+  padding: 12px;
+  background: #7a5236;
+  border: none;
+  color: #f5e6c8;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
+
+.popup-fechar:hover {
+  background: #4a321f;
+}

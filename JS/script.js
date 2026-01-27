@@ -49,6 +49,52 @@ let blackjack = {
   dealer: []
 };
 
+// NPCs e seus estados
+let npcs = {
+  oldPete: {
+    nome: "Old Pete",
+    titulo: "Barman",
+    reputacao: 0,
+    ajudado: false,
+    missaoAtiva: false
+  },
+  marshalColt: {
+    nome: "Marshal Colt",
+    titulo: "Xerife",
+    reputacao: 0,
+    ajudado: false,
+    missaoAtiva: false
+  },
+  docHolliday: {
+    nome: "Doc Holliday",
+    titulo: "Médico",
+    reputacao: 0,
+    ajudado: false,
+    missaoAtiva: false
+  },
+  morganSteel: {
+    nome: "Morgan Steel",
+    titulo: "Minerador",
+    reputacao: 0,
+    ajudado: false,
+    missaoAtiva: false
+  },
+  belleRose: {
+    nome: "Belle Rose",
+    titulo: "Dançarina",
+    reputacao: 0,
+    ajudado: false,
+    missaoAtiva: false
+  },
+  blackjackJim: {
+    nome: "Blackjack Jim",
+    titulo: "Apostador",
+    reputacao: 0,
+    ajudado: false,
+    missaoAtiva: false
+  }
+};
+
 /* ===============================================
    2. INICIALIZAÇÃO DO JOGO
    =============================================== */
@@ -96,6 +142,15 @@ function resetarJogo() {
   player.diasVivos = 1;
   
   logs = [];
+
+   // ===== RESET DOS NPCs =====
+  Object.keys(npcs).forEach(key => {
+    npcs[key].reputacao = 0;
+    npcs[key].ajudado = false;
+    npcs[key].missaoAtiva = false;
+  });
+  
+  correios = [];
 }
 
 // Volta para a tela inicial após game over
@@ -224,6 +279,8 @@ function avancarTempo(minutos) {
   
   atualizar();
   tentarEventos(eventosCorreios);
+  // Tenta eventos de NPCs
+  tentarEventos(eventosNPCs);
 }
 
 /* ===============================================
@@ -484,42 +541,120 @@ const eventosXerife = [
 const eventosCorreios = [
   {
     nome: "Carta Estranha",
-    chance: 0.005,
+    chance: 0.005, // 0.5% de chance
     executar() {
       adicionarCarta(
-        "Carta Estranha",
-        "Trabalho",
-        "Um mensageiro entrega uma carta lacrada. O selo está quebrado."
+        "Carta Lacrada",
+        "Mistério",
+        "Uma carta lacrada chega em suas mãos. O selo está quebrado e o papel amarelado pelo tempo. 'Procure o velho no celeiro à meia-noite', diz a mensagem. Assinatura ilegível.",
+        [
+          {
+            texto: "🌙 Ir ao celeiro (arriscado)",
+            acao: () => {
+              if (Math.random() < 0.5) {
+                const ganho = random(50, 150);
+                player.dinheiro += ganho;
+                log("✨ Você encontra um baú escondido! +$" + ganho);
+              } else {
+                sofrerDano(1);
+                log("💀 Era uma armadilha! Você levou um tiro.");
+              }
+            }
+          },
+          {
+            texto: "🚫 Ignorar a carta (seguro)",
+            acao: () => {
+              log("🤷 Você decide não arriscar.");
+            }
+          }
+        ]
       );
-      log("📬 Um mensageiro entrega uma carta lacrada. O selo está quebrado.");
       player.correioNovo = true;
       atualizarCorreiosUI();
     }
   },
   {
-    nome: "Bilhete Suspeito",
-    chance: 0.005,
+    nome: "Proposta Suspeita",
+    chance: 0.1, // 10% de chance
     executar() {
       adicionarCarta(
-        "Bilhete Suspeito",
+        "Proposta de Negócio",
         "Golpe",
-        "Um bilhete anônimo promete dinheiro fácil. Parece perigoso."
+        "Um empresário do leste oferece sociedade em um 'empreendimento lucrativo'. Ele pede $200 de investimento inicial e promete retorno de $500 em uma semana.",
+        [
+          {
+            texto: "💰 Investir $200 (arriscado)",
+            acao: () => {
+              if (player.dinheiro < 200) {
+                log("💸 Você não tem $200 para investir.");
+                return;
+              }
+              
+              player.dinheiro -= 200;
+              
+              if (Math.random() < 0.3) {
+                player.dinheiro += 500;
+                log("🎉 O negócio era legítimo! Você ganhou $500!");
+              } else {
+                log("😤 Era um golpe! Você perdeu $200.");
+              }
+            }
+          },
+          {
+            texto: "🤔 Recusar educadamente",
+            acao: () => {
+              log("🛡️ Você confia nos seus instintos.");
+            }
+          }
+        ]
       );
-      log("📬 Um bilhete anônimo promete dinheiro fácil. Parece perigoso.");
       player.correioNovo = true;
       atualizarCorreiosUI();
     }
   },
   {
-    nome: "Recado do Passado",
-    chance: 0.005,
+    nome: "Carta da Família",
+    chance: 0.05, // 5% de chance
     executar() {
       adicionarCarta(
-        "Recado do Passado",
-        "Lore",
-        "Uma carta antiga menciona eventos que você preferia esquecer."
+        "Notícias de Casa",
+        "Família",
+        "Sua irmã escreve de Boston. A fazenda da família está em dificuldades. Ela pede $300 para salvar a propriedade, mas você sabe que ela sempre foi orgulhosa demais para pedir ajuda sem necessidade.",
+        [
+          {
+            texto: "❤️ Enviar $300",
+            acao: () => {
+              if (player.dinheiro < 300) {
+                log("💔 Você não tem $300 para ajudar a família.");
+                return;
+              }
+              
+              player.dinheiro -= 300;
+              ganharXP(50);
+              log("💌 Você ajuda sua família. Isso vale mais que ouro.");
+            }
+          },
+          {
+            texto: "💵 Enviar $100 (parcial)",
+            acao: () => {
+              if (player.dinheiro < 100) {
+                log("💔 Você não tem nem $100.");
+                return;
+              }
+              
+              player.dinheiro -= 100;
+              ganharXP(20);
+              log("💌 Você envia o que pode. É melhor que nada.");
+            }
+          },
+          {
+            texto: "😔 Não enviar nada",
+            acao: () => {
+              log("💔 Você guarda o dinheiro. A culpa pesa.");
+            }
+          }
+        ]
       );
-      log("📬 Uma carta antiga menciona eventos que você preferia esquecer.");
       player.correioNovo = true;
       atualizarCorreiosUI();
     }
@@ -529,11 +664,403 @@ const eventosCorreios = [
 // Executa eventos aleatórios de uma lista
 function tentarEventos(lista) {
   lista.forEach(evento => {
+    // Verifica condição se existir
+    if (evento.condicao && !evento.condicao()) {
+      return;
+    }
+    
     if (Math.random() < evento.chance) {
       evento.executar();
     }
   });
 }
+
+// Eventos de Pedidos de Ajuda de NPCs
+const eventosNPCs = [
+  {
+    nome: "Velho Peterson - Dívida de Jogo",
+    chance: 0.004,
+    condicao: () => !npcs.oldPete.missaoAtiva && !npcs.oldPete.ajudado,
+    executar() {
+      npcs.oldPete.missaoAtiva = true;
+      adicionarCarta(
+        "Pedido de Velho Peterson",
+        "Ajuda - Urgente",
+        "O velho Pete, barman do saloon, escreve com letra trêmula:\n\n'Amigo, me meti em apuros. Devo $250 para uns sujeitos ruins que vão me quebrar as pernas se não pagar até amanhã. Você sempre foi gente boa aqui no saloon. Pode me ajudar? Prometo que vou compensar.'",
+        [
+          {
+            texto: "💰 Emprestar $250 (ajudar Peterson)",
+            acao: () => {
+              if (player.dinheiro < 250) {
+                log("💸 Você não tem $250 para emprestar.");
+                return;
+              }
+              
+              player.dinheiro -= 250;
+              npcs.oldPete.ajudado = true;
+              npcs.oldPete.reputacao += 50;
+              ganharXP(30);
+              
+              log("🤝 Pete agradece profundamente. Ele não vai esquecer isso.");
+              
+              // Recompensa futura
+              setTimeout(() => {
+                adicionarCarta(
+                  "Agradecimento de Velho Peterson",
+                  "Recompensa",
+                  "Pete conseguiu se recuperar. Ele envia $300 de volta com uma garrafa de whisky de presente.\n\n'Você salvou minha vida, parceiro. Aqui está seu dinheiro de volta e um pouco mais. Bebidas por minha conta sempre que quiser.'",
+                  [
+                    {
+                      texto: "🍺 Aceitar a recompensa",
+                      acao: () => {
+                        player.dinheiro += 300;
+                        player.energia = Math.min(100, player.energia + 20);
+                        log("💰 Peterson te devolve $300 e você ganha bebidas grátis!");
+                        log("🍺 Recompensa desbloqueada: Bebidas no saloon agora custam 50% menos!");
+                      }
+                    }
+                  ]
+                );
+              }, 120000); // 2 minutos de jogo
+            }
+          },
+          {
+            texto: "🤔 Emprestar $100 (ajuda parcial)",
+            acao: () => {
+              if (player.dinheiro < 100) {
+                log("💸 Você não tem $100.");
+                return;
+              }
+              
+              player.dinheiro -= 100;
+              npcs.oldPete.reputacao += 20;
+              ganharXP(10);
+              
+              log("🤷 Pete agradece, mas parece preocupado. Não será suficiente.");
+              npcs.oldPete.missaoAtiva = false;
+            }
+          },
+          {
+            texto: "❌ Recusar o pedido",
+            acao: () => {
+              npcs.oldPete.reputacao -= 30;
+              log("😔 Pete parece decepcionado. Você pode ter perdido um amigo.");
+              npcs.oldPete.missaoAtiva = false;
+            }
+          }
+        ]
+      );
+    }
+  },
+  
+  {
+    nome: "Doutor Ronildo - Remédios Roubados",
+    chance: 0.004,
+    condicao: () => !npcs.docHolliday.missaoAtiva && !npcs.docHolliday.ajudado,
+    executar() {
+      npcs.docHolliday.missaoAtiva = true;
+      adicionarCarta(
+        "Pedido do Dr. Ronildo",
+        "Ajuda - Investigação",
+        "O médico da cidade precisa de ajuda:\n\n'Roubaram meus suprimentos médicos na noite passada. Sem eles, não posso tratar os doentes. Vi uns tipos suspeitos perto do cassino. Preciso que alguém recupere minhas coisas, mas não posso me envolver oficialmente. Pago $150 se conseguir de volta.'",
+        [
+          {
+            texto: "🔍 Investigar o cassino (arriscado)",
+            acao: () => {
+              player.energia -= 20;
+              
+              if (Math.random() < 0.6) {
+                // Sucesso
+                player.dinheiro += 150;
+                npcs.docHolliday.ajudado = true;
+                npcs.docHolliday.reputacao += 40;
+                ganharXP(50);
+                
+                log("🕵️ Você recupera os remédios e entrega ao doutor!");
+                log("💰 Dr. Ronildo te paga $150 como prometido.");
+                
+                // Benefício permanente
+                adicionarCarta(
+                  "Gratidão do Doutor",
+                  "Benefício",
+                  "Dr. Ronildo está imensamente grato:\n\n'Você salvou vidas hoje. De agora em diante, tratamentos médicos terão 50% de desconto para você.'",
+                  [
+                    {
+                      texto: "🏥 Agradecer",
+                      acao: () => {
+                        log("🏥 Benefício desbloqueado: Curativos agora custam $12 ao invés de $25!");
+                      }
+                    }
+                  ]
+                );
+              } else {
+                // Falha
+                sofrerDano(2);
+                log("💥 Você foi descoberto! Os ladrões te deram uma surra.");
+                npcs.docHolliday.missaoAtiva = false;
+              }
+            }
+          },
+          {
+            texto: "👮 Avisar o xerife",
+            acao: () => {
+              npcs.docHolliday.reputacao += 10;
+              npcs.marshalColt.reputacao += 20;
+              log("⚖️ O xerife resolve o caso oficialmente. Dr. Ronildo agradece levemente.");
+              npcs.docHolliday.missaoAtiva = false;
+            }
+          },
+          {
+            texto: "🚫 Não se envolver",
+            acao: () => {
+              npcs.docHolliday.reputacao -= 20;
+              log("😷 Dr. Ronildo fica desapontado com sua covardia.");
+              npcs.docHolliday.missaoAtiva = false;
+            }
+          }
+        ]
+      );
+    }
+  },
+  
+  {
+    nome: "Rosenilda - Perseguição",
+    chance: 0.004,
+    condicao: () => !npcs.belleRose.missaoAtiva && !npcs.belleRose.ajudado,
+    executar() {
+      npcs.belleRose.missaoAtiva = true;
+      adicionarCarta(
+        "Carta Desesperada de Rose",
+        "Ajuda - Proteção",
+        "Rosenilda, a dançarina do saloon, escreve com urgência:\n\n'Um homem perigoso do meu passado chegou na cidade. Ele jura que não vai me deixar em paz. Estou com medo. Você parece corajoso... pode me ajudar a sair da cidade? Pago tudo que tenho: $200.'",
+        [
+          {
+            texto: "🐴 Escoltar Rose para fora da cidade",
+            acao: () => {
+              if (player.energia < 30) {
+                log("😴 Você está cansado demais para essa missão.");
+                return;
+              }
+              
+              player.energia -= 30;
+              
+              if (player.equip.arma) {
+                // Com arma: sucesso garantido
+                player.dinheiro += 200;
+                npcs.belleRose.ajudado = true;
+                npcs.belleRose.reputacao += 60;
+                ganharXP(60);
+                
+                log("🔫 Sua arma intimida os perseguidores. Rose escapa em segurança!");
+                log("💰 Rose te paga $200 e te dá um beijo de agradecimento.");
+                
+              } else {
+                // Sem arma: arriscado
+                if (Math.random() < 0.5) {
+                  player.dinheiro += 200;
+                  npcs.belleRose.ajudado = true;
+                  npcs.belleRose.reputacao += 60;
+                  ganharXP(60);
+                  log("😅 Foi tenso, mas Rose conseguiu fugir!");
+                  log("💰 Rose te paga $200 com lágrimas nos olhos.");
+                } else {
+                  sofrerDano(3);
+                  log("💥 O perseguidor te encontra! Você leva uma surra brutal.");
+                  log("😢 Rose é capturada...");
+                  npcs.belleRose.missaoAtiva = false;
+                }
+              }
+            }
+          },
+          {
+            texto: "🤝 Tentar negociar com o perseguidor",
+            acao: () => {
+              if (player.dinheiro >= 150) {
+                player.dinheiro -= 150;
+                npcs.belleRose.reputacao += 30;
+                log("💵 Você paga $150 ao homem. Ele aceita e vai embora.");
+                log("😌 Rose está aliviada, mas ainda assustada.");
+                npcs.belleRose.missaoAtiva = false;
+              } else {
+                log("💸 Você não tem dinheiro suficiente para negociar.");
+              }
+            }
+          },
+          {
+            texto: "😰 Não se envolver",
+            acao: () => {
+              npcs.belleRose.reputacao -= 50;
+              log("💔 Rose nunca mais olha na sua cara. Você a ouve chorar à noite.");
+              npcs.belleRose.missaoAtiva = false;
+            }
+          }
+        ]
+      );
+    }
+  },
+  
+  {
+    nome: "Morgan Ferroveio - Sócio na Mina",
+    chance: 0.003,
+    condicao: () => player.minaOuro.comprada && !npcs.morganSteel.missaoAtiva && !npcs.morganSteel.ajudado,
+    executar() {
+      npcs.morganSteel.missaoAtiva = true;
+      adicionarCarta(
+        "Proposta de Morgan Ferroveio",
+        "Negócio - Sociedade",
+        "Morgan Ferroveio, minerador experiente, faz uma proposta:\n\n'Ouvi dizer que você comprou a velha mina. Sou minerador há 30 anos. Posso te ensinar onde cavar e aumentar suas chances de achar ouro em 50%. Em troca, quero 30% dos lucros. Aceita sociedade?'",
+        [
+          {
+            texto: "🤝 Aceitar sociedade (50% mais ouro, 30% menos lucro)",
+            acao: () => {
+              npcs.morganSteel.ajudado = true;
+              npcs.morganSteel.reputacao += 50;
+              ganharXP(40);
+              
+              log("⛏️ Morgan se torna seu sócio na mina!");
+              log("📈 Benefício: Chance de achar ouro aumenta de 10% para 15%!");
+              log("📉 Contrapartida: Morgan fica com 30% dos ganhos.");
+              
+              // Este benefício precisaria ser implementado na lógica da mina
+            }
+          },
+          {
+            texto: "💰 Oferecer pagamento único de $500",
+            acao: () => {
+              if (player.dinheiro < 500) {
+                log("💸 Você não tem $500.");
+                return;
+              }
+              
+              player.dinheiro -= 500;
+              npcs.morganSteel.reputacao += 30;
+              ganharXP(30);
+              
+              log("💵 Morgan aceita o pagamento e te dá algumas dicas valiosas.");
+              log("📈 Você aprende técnicas que aumentam em 20% suas chances.");
+              npcs.morganSteel.missaoAtiva = false;
+            }
+          },
+          {
+            texto: "❌ Recusar - Prefiro trabalhar sozinho",
+            acao: () => {
+              npcs.morganSteel.reputacao -= 10;
+              log("🤷 Morgan dá de ombros. 'Sua perda', ele murmura.");
+              npcs.morganSteel.missaoAtiva = false;
+            }
+          }
+        ]
+      );
+    }
+  },
+  
+  {
+    nome: "Blackjack Jim - Dívida Honrosa",
+    chance: 0.004,
+    condicao: () => !npcs.blackjackJim.missaoAtiva && !npcs.blackjackJim.ajudado,
+    executar() {
+      npcs.blackjackJim.missaoAtiva = true;
+      adicionarCarta(
+        "Proposta de Blackjack Jim",
+        "Aposta - Desafio",
+        "Jim, o famoso apostador, te desafia:\n\n'Você tem coragem? Aposto $500 que você não consegue ganhar 3 rodadas seguidas de blackjack. Se conseguir, levo você como parceiro nos grandes torneios. Se perder, me paga $200. Topa?'",
+        [
+          {
+            texto: "🎰 Aceitar o desafio",
+            acao: () => {
+              if (player.dinheiro < 200) {
+                log("💸 Você precisa de pelo menos $200 para aceitar.");
+                return;
+              }
+              
+              log("🃏 Desafio aceito! Vença 3 blackjacks seguidos.");
+              log("⚠️ Sistema de desafio será implementado em breve!");
+              // Aqui você poderia implementar um sistema de blackjack especial
+              npcs.blackjackJim.missaoAtiva = false;
+            }
+          },
+          {
+            texto: "🎲 Propor dados ao invés de cartas",
+            acao: () => {
+              log("🎲 Jim ri. 'Dados é para amadores, mas tudo bem.'");
+              
+              if (Math.random() < 0.4) {
+                player.dinheiro += 300;
+                npcs.blackjackJim.reputacao += 40;
+                log("🍀 Você teve sorte! Jim respeita sua coragem.");
+              } else {
+                player.dinheiro -= 200;
+                log("💀 Jim ganha. 'Talvez da próxima vez', ele sorri.");
+              }
+              npcs.blackjackJim.missaoAtiva = false;
+            }
+          },
+          {
+            texto: "🚫 Recusar - Não sou apostador",
+            acao: () => {
+              npcs.blackjackJim.reputacao -= 20;
+              log("🙄 Jim te olha com desprezo. 'Pensei que tinha coragem.'");
+              npcs.blackjackJim.missaoAtiva = false;
+            }
+          }
+        ]
+      );
+    }
+  },
+  
+  {
+    nome: "Marcão Colt - Informante",
+    chance: 0.003,
+    condicao: () => !npcs.marshalColt.missaoAtiva && !npcs.marshalColt.ajudado && player.nivel >= 5,
+    executar() {
+      npcs.marshalColt.missaoAtiva = true;
+      adicionarCarta(
+        "Proposta Confidencial do Xerife",
+        "Lei - Proposta",
+        "Marcão Colt te procura discretamente:\n\n'Você tem talento para... atividades questionáveis. Que tal usar isso para o bem? Seja meu informante. Me avise sobre crimes grandes e te garanto imunidade para pequenos delitos. Pago $100 por informação valiosa.'",
+        [
+          {
+            texto: "🤝 Aceitar ser informante",
+            acao: () => {
+              npcs.marshalColt.ajudado = true;
+              npcs.marshalColt.reputacao += 70;
+              ganharXP(50);
+              
+              log("⚖️ Você agora trabalha secretamente para o xerife!");
+              log("🛡️ Benefício: Chance de prisão em crimes menores reduzida em 30%!");
+              log("💰 Você recebe $100 de adiantamento.");
+              player.dinheiro += 100;
+            }
+          },
+          {
+            texto: "🤔 Pedir mais dinheiro ($200 por info)",
+            acao: () => {
+              if (Math.random() < 0.6) {
+                npcs.marshalColt.ajudado = true;
+                npcs.marshalColt.reputacao += 50;
+                log("💵 Colt concorda. 'Você dirige um bom negócio.'");
+                log("🛡️ Mesmo benefício, mas pagamento dobrado!");
+                player.dinheiro += 150;
+              } else {
+                npcs.marshalColt.reputacao -= 30;
+                log("😠 Colt fica irritado. 'Esqueça. Não preciso de gananciosos.'");
+                npcs.marshalColt.missaoAtiva = false;
+              }
+            }
+          },
+          {
+            texto: "❌ Recusar - Não sou dedo-duro",
+            acao: () => {
+              npcs.marshalColt.reputacao -= 40;
+              log("👮 Colt te olha com desconfiança. 'Vou ficar de olho em você.'");
+              npcs.marshalColt.missaoAtiva = false;
+            }
+          }
+        ]
+      );
+    }
+  }
+];
 
 /* ===============================================
    9. SISTEMA DE CORREIOS
@@ -575,28 +1102,82 @@ function atualizarCorreios() {
     `;
     
     div.onclick = () => {
-      msg.lida = true;
-      log("📖 " + msg.texto);
-      atualizarCorreios();
+      abrirPopupCorreio(msg);
     };
     
     lista.appendChild(div);
   });
 }
 
-// Adiciona nova carta ao correio
-function adicionarCarta(titulo, tipo, texto) {
-  correios.unshift({
+// Abre popup de correio
+function abrirPopupCorreio(mensagem) {
+  const popup = document.getElementById("popupCorreio");
+  const titulo = document.getElementById("popupTitulo");
+  const tipo = document.getElementById("popupTipo");
+  const texto = document.getElementById("popupTexto");
+  const escolhas = document.getElementById("popupEscolhas");
+  
+  // Marca como lida
+  mensagem.lida = true;
+  
+  // Preenche conteúdo
+  titulo.textContent = "📬 " + mensagem.titulo;
+  tipo.textContent = mensagem.tipo;
+  texto.textContent = mensagem.texto;
+  
+  // Limpa escolhas antigas
+  escolhas.innerHTML = "";
+  
+  // Adiciona escolhas se existirem
+  if (mensagem.escolhas && mensagem.escolhas.length > 0) {
+    mensagem.escolhas.forEach((escolha, index) => {
+      const btn = document.createElement("button");
+      btn.className = "popup-escolha-btn";
+      btn.textContent = escolha.texto;
+      btn.onclick = () => {
+        escolha.acao();
+        fecharPopupCorreio();
+        atualizarCorreios();
+      };
+      escolhas.appendChild(btn);
+    });
+  }
+  
+  // Mostra popup
+  popup.style.display = "flex";
+  
+  // Atualiza UI
+  atualizarCorreios();
+}
+
+// Fecha popup
+function fecharPopupCorreio() {
+  document.getElementById("popupCorreio").style.display = "none";
+}
+
+
+function adicionarCarta(titulo, tipo, texto, escolhas = null) {
+  const novaCarta = {
     titulo,
     tipo,
     texto,
-    lida: false
-  });
+    lida: false,
+    escolhas: escolhas
+  };
+  
+  correios.unshift(novaCarta);
   
   player.correioNovo = true;
   atualizarCorreiosUI();
+  
+  // Abre popup automaticamente quando carta chega
+  log("📬 Uma nova carta chegou aos Correios!");
+  
+  // Delay curto para o jogador ver a mensagem do log
+  setTimeout(() => {
+    abrirPopupCorreio(novaCarta);
+  }, 500);
 }
-
 /* ===============================================
    10. SISTEMA DA MINA DE OURO
    =============================================== */
